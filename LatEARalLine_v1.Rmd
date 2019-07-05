@@ -55,9 +55,9 @@ Run the models w/ both predictors, i.e. stage & VOR together in the model
 Does stage contribute anything once individual VOR is in the model?
 
 ```{r}
-glmm0 <- glmer(Response ~ 1 + (1|Clutch), family=binomial(logit), data=test)
+glmm0 <- glmer(Response ~ 1 + (1|Clutch) + (1|Round), family=binomial(logit), data=test)
 #glmm1 <- glmer(Response ~ Stage + (1|Clutch), family=binomial(logit), data=test)
-glmm2 <- glmer(Response ~ Treatment + (1|Clutch), family=binomial(logit), data=test)
+glmm2 <- glmer(Response ~ Treatment + (1|Clutch) + (1|Round), family=binomial(logit), data=test)
 #glmm3 <- glmer(Response ~ Stage + Treatment + (1|Clutch), family=binomial(logit), data=test)
 #glmm4 <- glmer(Response ~ Stage * Treatment + (1|Clutch), family=binomial(logit), data=test)
 
