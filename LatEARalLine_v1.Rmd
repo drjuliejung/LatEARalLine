@@ -79,42 +79,26 @@ AIC(glmm2)
 
 anova(glmm0,glmm2) #treatment effect
 ```
-The warnings here (for example "unable to evaluate scaled gradient Hessian is numerically singular: parameters are not uniquely determined") occur because:
 
-The Hessian is singular because the optimizer can't distinguish some of your parameters. This makes sense, given that your data set does not really distinguish them either. Some of your variables are heavily weighted towards certain values over others. So you need a more balanced data set. 
-
-Hessian problem can be due to low representation 
-of certain values in the response, as well as to a small sample size.
-
+Hat and Not Hat
 ```{r}
-#glmm1 <- glmer(Response ~ Developmental.Stage + (1|Clutch), family=binomial(logit), data=test, glmerControl(optimizer="bobyqa", optCtrl = list(maxfun = 100000)))
-
-#glmm2 <- glmer(Response ~ Average.Amplitude + (1|Clutch), family=binomial(logit), data=test)
-
-#glmm3 <- glmer(Response ~ Average.Amplitude + Developmental.Stage + (1|Clutch), family=binomial(logit), data=test)
-
-#glmm1 <- glmer(Response ~ Developmental.Stage + (1|Clutch), family=binomial(logit), data=test, glmerControl(optimizer="bobyqa", optCtrl = list(maxfun = 100000)))
-
-#glmm2 <- glmer(Response ~ Average.Amplitude + (1|Clutch), family=binomial(logit), data=test)
-
-#glmm3 <- glmer(Response ~ Average.Amplitude + Developmental.Stage + (1|Clutch), family=binomial(logit), data=test)
-
-
-#summary(glmm1)
-#summary(glmm2)
-#summary(glmm3)
-
-#AIC(glmm1)
-#AIC(glmm2)
-#AIC(glmm3)
-
-#qqnorm(resid(glmm1))
-#qqnorm(resid(glmm2))
-#qqnorm(resid(glmm3))
-
-#anova(glmm1,glmm3) # VOR effect
-#anova(glmm2,glmm3) # stage effect
+hat <- subset(test, test$Response==1)
+nohat <- subset(test, test$Response==0)
 ```
 
-According to Justin (at STRI workshop): With mixed effects models, you can use the Anova() function from the car package to calculate summary statistics, but it is not advised by the R gurus. Instead, you should use Likelihood Ratio Tests (LRT) to compare nested models.
+```{r}
+plot.responseGLM<-ggplot(test, aes(x=Treatment, y=as.numeric(as.character((Response)), shape=as.factor(Response)))) +
+  stat_smooth(method = "glm", method.args=list(family="binomial"), color="black", linetype="dashed") +
+  geom_point(data=hat, shape=21, size=3, position=position_jitter(height=0.06, width=0.2)) +
+  geom_point(data=nohat, shape=16, size=3, position=position_jitter(height=0.06, width=0.2)) +
+  scale_y_continuous(breaks = c(0, 1))+
+  theme(axis.text.y=element_text(size=14, colour= "black")) +
+  theme(axis.text.x=element_text(size=14, colour= "black")) +
+  theme(axis.title.x=element_text(size=14, colour = "black")) +
+  theme(axis.title.y=element_text(size=14, colour = "black"))+
+  labs(y = "Hatching response \n", 
+       x = "\n Treatment")+
+  theme_cowplot(font_size = 14, line_size = 1)
 
+plot.responseGLM
+```
