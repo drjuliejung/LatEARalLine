@@ -1,0 +1,120 @@
+---
+title: "LatEARalLine_v1"
+author: "Julie Jung"
+date: "July 5, 2019"
+output: html_document
+---
+
+NOTE TO SELF: THIS IS THE LATEST/BEST VERSION OF VOR ANALYSIS. 
+
+```{r setup, include=FALSE}
+rm(list=ls()) #clear environment
+setwd('/Users/juliejung/Documents/GitHub/VOR-ms') 
+```
+
+## install and load packages
+
+```{r}
+library(xlsx);library(clinfun);library(car)
+library(MASS);library(multcomp);library(pscl);library(psych);library(lme4)
+library("stargazer");library("knitr");library("dplyr")
+library(sciplot);library(ggplot2);library(ggrepel); library(extrafont); library(ggthemes);library(reshape);library(grid);
+library(scales);library(RColorBrewer);library(gridExtra);library(cowplot)
+```
+
+Colors
+```{r}
+#library(RColorBrewer)
+#stagecolors <- brewer.pal("Dark2", n=6)
+#clutchcolors<- c("red", "blue", "green", "purple", "orange")
+#clutchgrays<- brewer.pal("Greys", n=9)
+```
+
+## Daily developmental series
+
+```{r} 
+jiggling.df<-read.xlsx("20190704_LatEARalLine.xlsx", sheetName="individual data")
+#str(Daily.df) #note this includes the two 7d indivs
+```
+Subset out test vs pilot
+```{r}
+pilot <- subset(jiggling.df, jiggling.df$Data=="pilot")
+test <- subset(jiggling.df, jiggling.df$Data=="test")
+```
+
+## GLMM
+
+We used generalized linear mixed models (GLMM, lme4 package; Bates and Maechler 2009)
+
+Use a GLMM with binomial error distribution to test if the probability of hatching was predicted by developmental stage and VOR. The response variable was the response of each individual embryo (hatched or not) and we included clutch as a random intercept in the model to account for non-independence of clutches. For GLMMs we estimated p values of our predictors by using likelihood ratio tests of nested models (Zuur et al. 2009).
+
+
+incorporate clutch as a random effect
+
+Run the models w/ both predictors, i.e. stage & VOR together in the model
+Does stage contribute anything once individual VOR is in the model?
+
+```{r}
+glmm0 <- glmer(Response ~ 1 + (1|Clutch), family=binomial(logit), data=test)
+#glmm1 <- glmer(Response ~ Stage + (1|Clutch), family=binomial(logit), data=test)
+glmm2 <- glmer(Response ~ Treatment + (1|Clutch), family=binomial(logit), data=test)
+#glmm3 <- glmer(Response ~ Stage + Treatment + (1|Clutch), family=binomial(logit), data=test)
+#glmm4 <- glmer(Response ~ Stage * Treatment + (1|Clutch), family=binomial(logit), data=test)
+
+summary(glmm0)
+#summary(glmm1)
+summary(glmm2)
+#summary(glmm3)
+#summary(glmm4)
+
+AIC(glmm0)
+#AIC(glmm1)
+AIC(glmm2)
+#AIC(glmm3)
+#AIC(glmm4)
+
+#anova(glmm1,glmm3) # treatment effect
+#anova(glmm2,glmm3) # stage effect
+#anova(glmm3,glmm4) # interaction effect
+
+anova(glmm0,glmm2) #treatment effect
+```
+The warnings here (for example "unable to evaluate scaled gradient Hessian is numerically singular: parameters are not uniquely determined") occur because:
+
+The Hessian is singular because the optimizer can't distinguish some of your parameters. This makes sense, given that your data set does not really distinguish them either. Some of your variables are heavily weighted towards certain values over others. So you need a more balanced data set. 
+
+Hessian problem can be due to low representation 
+of certain values in the response, as well as to a small sample size.
+
+```{r}
+#glmm1 <- glmer(Response ~ Developmental.Stage + (1|Clutch), family=binomial(logit), data=test, glmerControl(optimizer="bobyqa", optCtrl = list(maxfun = 100000)))
+
+#glmm2 <- glmer(Response ~ Average.Amplitude + (1|Clutch), family=binomial(logit), data=test)
+
+#glmm3 <- glmer(Response ~ Average.Amplitude + Developmental.Stage + (1|Clutch), family=binomial(logit), data=test)
+
+#glmm1 <- glmer(Response ~ Developmental.Stage + (1|Clutch), family=binomial(logit), data=test, glmerControl(optimizer="bobyqa", optCtrl = list(maxfun = 100000)))
+
+#glmm2 <- glmer(Response ~ Average.Amplitude + (1|Clutch), family=binomial(logit), data=test)
+
+#glmm3 <- glmer(Response ~ Average.Amplitude + Developmental.Stage + (1|Clutch), family=binomial(logit), data=test)
+
+
+#summary(glmm1)
+#summary(glmm2)
+#summary(glmm3)
+
+#AIC(glmm1)
+#AIC(glmm2)
+#AIC(glmm3)
+
+#qqnorm(resid(glmm1))
+#qqnorm(resid(glmm2))
+#qqnorm(resid(glmm3))
+
+#anova(glmm1,glmm3) # VOR effect
+#anova(glmm2,glmm3) # stage effect
+```
+
+According to Justin (at STRI workshop): With mixed effects models, you can use the Anova() function from the car package to calculate summary statistics, but it is not advised by the R gurus. Instead, you should use Likelihood Ratio Tests (LRT) to compare nested models.
+
