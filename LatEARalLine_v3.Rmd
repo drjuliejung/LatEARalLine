@@ -106,7 +106,7 @@ Compare number of neuromasts between younger (age 2d and 3d) and older (age 4d a
 
 Read in Diasp spreadsheet
 ```{r}
-Diasp.df<-read.csv("diaspV10.csv", stringsAsFactors = TRUE)
+Diasp.df<-read.csv("diaspV11.csv", stringsAsFactors = TRUE)
 str(Diasp.df)
 ```
 
@@ -135,29 +135,29 @@ max(Diasp.df$Date)
 ```
 
 ```{r}
-Diasp.df$JJ_revised_total <- Diasp.df$JJ_face_middle_totalsides +
-  Diasp.df$JJ_face_yolk_totalsides +
-  Diasp.df$JJ_face_mouth_totalsides +
-  Diasp.df$JJ_face_undereye_totalsides +
-  (Diasp.df$JJ_body_ALL_1side)*2 +
-  (Diasp.df$JJ_body_PLL_1side)*2 +
-  Diasp.df$JJ_body_dorsal_totalsides
+Diasp.df$JJ_revised_total <- Diasp.df$JJ_naris_totalsides +
+  Diasp.df$JJ_ventral_totalsides +
+  Diasp.df$JJ_oral_totalsides +
+  Diasp.df$JJ_infraorbital_totalsides +
+  (Diasp.df$JJ_supraorbital_1side)*2 +
+  (Diasp.df$JJ_middle_1side)*2 +
+  Diasp.df$JJ_dorsal_totalsides
 
-Diasp.df$AC_revised_total <- Diasp.df$AC_face_middle_totalsides +
-  Diasp.df$AC_face_yolk_totalsides +
-  Diasp.df$AC_face_mouth_totalsides +
-  Diasp.df$AC_face_undereye_totalsides +
-  (Diasp.df$AC_body_ALL_1side)*2 +
-  (Diasp.df$AC_body_PLL_1side)*2 +
-  Diasp.df$AC_body_dorsal_totalsides
+Diasp.df$AC_revised_total <- Diasp.df$AC_naris_totalsides +
+  Diasp.df$AC_ventral_totalsides +
+  Diasp.df$AC_oral_totalsides +
+  Diasp.df$AC_infraorbital_totalsides +
+  (Diasp.df$AC_supraorbital_1side)*2 +
+  (Diasp.df$AC_middle_1side)*2 +
+  Diasp.df$AC_dorsal_totalsides
 ```
 
 Take the average of my counts and Avital's counts. 
 ```{r}
 Diasp.df$JJAC_total <- (Diasp.df$JJ_revised_total + Diasp.df$AC_revised_total)/2
-Diasp.df$JJAC_total_excel <- (Diasp.df$JJ_total + Diasp.df$AC_total)/2
+#Diasp.df$JJAC_total_excel <- (Diasp.df$JJ_total + Diasp.df$AC_total)/2
 
-Diasp.df$Difference <- Diasp.df$JJAC_total - Diasp.df$JJAC_total_excel
+#Diasp.df$Difference <- Diasp.df$JJAC_total - Diasp.df$JJAC_total_excel
 ```
 
 split up younger (age 2d and 3d) and older (age 4d and 5d) aged groups
@@ -289,18 +289,18 @@ se(olderones$JJAC_total)
 ```
 plot of neuromasts x stage, with hatching response separated by color
 ```{r}
-ggplot(Diasp.df, aes(x=Final_Stages, y=JJAC_total, color=HorNH)) + 
-  geom_point(size=3) +
-  ylab("Neuromasts")+
-  theme(panel.grid.major = element_blank(),
-      panel.grid.minor = element_blank())+
-  xlab("Developmental stage")+
-  theme(legend.position="none") +
-  theme_cowplot(font_size = 18, line_size = 1) +
-  theme(axis.text.y=element_text(size=18, colour= "black")) +
-  theme(axis.text.x=element_text(size=18, colour= "black")) +
-  theme(axis.title.x=element_text(size=18, colour = "black")) +
-  theme(axis.title.y=element_text(size=18, colour = "black"))
+# ggplot(Diasp.df, aes(x=Final_Stages, y=JJAC_total, color=HorNH)) + 
+#   geom_point(size=3) +
+#   ylab("Neuromasts")+
+#   theme(panel.grid.major = element_blank(),
+#       panel.grid.minor = element_blank())+
+#   xlab("Developmental stage")+
+#   theme(legend.position="none") +
+#   theme_cowplot(font_size = 18, line_size = 1) +
+#   theme(axis.text.y=element_text(size=18, colour= "black")) +
+#   theme(axis.text.x=element_text(size=18, colour= "black")) +
+#   theme(axis.title.x=element_text(size=18, colour = "black")) +
+#   theme(axis.title.y=element_text(size=18, colour = "black"))
 ```
 
 ```{r}
@@ -310,13 +310,16 @@ str(Diasp.df)
 
 Hat<-subset(Diasp.df, Diasp.df$HorNH=="Yes", na.rm=TRUE)
 NoHat<-subset(Diasp.df, Diasp.df$HorNH=="No", na.rm=TRUE)
+
+range(Hat$Tadpole_length, na.rm=TRUE)
+range(Hat$Final_Stages, na.rm=TRUE)
 ```
 
 Tad length figure 
 ```{r}
 Figure4a<-ggplot(data=Diasp.df, aes(x=Tadpole_length, y=JJAC_total, group=HorNH)) + 
-  geom_jitter(data=NoHat, pch=19, size=2, position=position_jitter(width=0.25)) +
-  geom_jitter(data=Hat, pch=1, size=2,  position=position_jitter(width=0.25)) +
+  geom_jitter(data=NoHat, pch=19, size=2) +
+  geom_jitter(data=Hat, pch=1, size=2) +
   scale_y_continuous(limits=c(0, 450),
                      breaks=c(0, 100, 200, 300, 400),
                      labels=c("0", "100", "200", "300", "400"))+
@@ -332,8 +335,8 @@ Figure4a<-ggplot(data=Diasp.df, aes(x=Tadpole_length, y=JJAC_total, group=HorNH)
   theme(axis.text.y=element_text(size=12, colour= "black")) +
   theme(axis.text.x=element_text(size=12, colour= "black")) +
   theme(axis.title.x=element_text(size=12, colour = "black")) +
-  theme(axis.title.y=element_text(size=12, colour = "black"))
-
+  theme(axis.title.y=element_text(size=12, colour = "black"))+
+  geom_hline(yintercept=c(246), linetype="dotted")
 Figure4a
 ```
 
@@ -341,8 +344,8 @@ Figure4a
 Age figure 
 ```{r}
 Figure4b<-ggplot(data=Diasp.df, aes(x=Stimulus_start_age, y=JJAC_total, group=HorNH)) + 
-  geom_jitter(data=NoHat, pch=19, size=2, position=position_jitter(width=0.25)) +
-  geom_jitter(data=Hat, pch=1, size=2,  position=position_jitter(width=0.25)) +
+  geom_jitter(data=NoHat, pch=19, size=2, position=position_jitter(width=0.15)) +
+  geom_jitter(data=Hat, pch=1, size=2, position=position_jitter(width=0.15)) +
   scale_y_continuous(limits=c(0, 450),
                      breaks=c(0, 100, 200, 300, 400),
                      labels=c("0", "100", "200", "300", "400"))+
@@ -358,15 +361,15 @@ Figure4b<-ggplot(data=Diasp.df, aes(x=Stimulus_start_age, y=JJAC_total, group=Ho
   theme(axis.text.y=element_text(size=12, colour= "black")) +
   theme(axis.text.x=element_text(size=12, colour= "black")) +
   theme(axis.title.x=element_text(size=12, colour = "black")) +
-  theme(axis.title.y=element_text(size=12, colour = "black"))
-
+  theme(axis.title.y=element_text(size=12, colour = "black"))+
+  geom_hline(yintercept=c(246), linetype="dotted")
 Figure4b
 ```
 
 ```{r}
 Figure4c<-ggplot(data=Diasp.df, aes(x=Final_Stages, y=JJAC_total, group=HorNH)) + 
-  geom_jitter(data=NoHat, pch=19, size=2, position=position_jitter(width=0.25)) +
-  geom_jitter(data=Hat, pch=1, size=2,  position=position_jitter(width=0.25)) +
+  geom_jitter(data=NoHat, pch=19, size=2, position=position_jitter(width=0.15)) +
+  geom_jitter(data=Hat, pch=1, size=2,  position=position_jitter(width=0.15)) +
   scale_y_continuous(limits=c(0, 450),
                      breaks=c(0, 100, 200, 300, 400),
                      labels=c("0", "100", "200", "300", "400"))+
@@ -376,14 +379,14 @@ Figure4c<-ggplot(data=Diasp.df, aes(x=Final_Stages, y=JJAC_total, group=HorNH)) 
   scale_shape_manual(name=NULL, 
                      values=c(19, 1),
                      labels=c("No hatch", "Hatch")) +
-  labs(x = "Developmental stage", 
+  labs(x = "Stage", 
        y = "# of neuromasts") +
   theme_cowplot(font_size = 12, line_size = 1) +
   theme(axis.text.y=element_text(size=12, colour= "black")) +
   theme(axis.text.x=element_text(size=12, colour= "black")) +
   theme(axis.title.x=element_text(size=12, colour = "black")) +
-  theme(axis.title.y=element_text(size=12, colour = "black"))
-
+  theme(axis.title.y=element_text(size=12, colour = "black"))+
+  geom_hline(yintercept=c(246), linetype="dotted")
 Figure4c
 ```
 
@@ -424,6 +427,12 @@ Diasp.df<-Diasp.df %>%
   mutate(HorNH = ifelse(HorNH == "No", 0, 1))
 ```
 
+What is the threshold/min num number of neuromasts for those that hatched?
+```{r}
+hat<-subset(Diasp.df, Diasp.df$HorNH==1)
+min(hat$JJAC_total) #247 is the threshold. 
+```
+
 ```{r}
 NH_s25 <-subset(Diasp.df, Diasp.df$HorNH==0 & Final_Stages==25)
 NH_s26 <-subset(Diasp.df, Diasp.df$HorNH==0 & Final_Stages==26)
@@ -437,55 +446,97 @@ H_s32  <-subset(Diasp.df, Diasp.df$HorNH==1 & Final_Stages==32)
 ```
 
 ```{r}
-#stagecolors <- c("black", "brown2", "orange1", "sienna4", "limegreen", "forestgreen")
-stagecolors <- brewer.pal("BrBG", n=11)
-
-plot.stageGLM <- ggplot(Diasp.df, aes(x=as.numeric(as.character(Final_Stages)), y=as.numeric(as.character(HorNH)))) +
-  stat_smooth(method = "glm", method.args=list(family="binomial"), color="black", linetype="dashed") +
-  geom_point(data=NH_s25, aes(x=as.numeric(as.character(Final_Stages)), fill=stagecolors[1]), colour="black", pch=21, size=4, position=position_jitter(height=0.06, width=0.2)) +
-  geom_point(data=NH_s26, aes(x=as.numeric(as.character(Final_Stages)), fill=stagecolors[2]), colour="black", pch=21, size=4, position=position_jitter(height=0.06, width=0.2)) +
-  geom_point(data=NH_s27, aes(x=as.numeric(as.character(Final_Stages)), fill=stagecolors[3]), colour="black", pch=21, size=4, position=position_jitter(height=0.06, width=0.2)) +
-  geom_point(data=NH_s28, aes(x=as.numeric(as.character(Final_Stages)), fill=stagecolors[4]), colour="black", pch=21, size=4, position=position_jitter(height=0.06, width=0.2)) +
-  geom_point(data=H_s28, aes(x=as.numeric(as.character(Final_Stages)), fill=stagecolors[4]), colour="black", pch=21, size=4, position=position_jitter(height=0.06, width=0.2)) +
-  geom_point(data=NH_s29, aes(x=as.numeric(as.character(Final_Stages)), fill=stagecolors[5]), colour="black", pch=21, size=4, position=position_jitter(height=0.06, width=0.2)) +
-  geom_point(data=H_s29, aes(x=as.numeric(as.character(Final_Stages)), fill=stagecolors[5]), colour="black", pch=21, size=4, position=position_jitter(height=0.06, width=0.2)) +
-  geom_point(data=H_s31, aes(x=as.numeric(as.character(Final_Stages)), fill=stagecolors[6]), colour="black", pch=21, size=4, position=position_jitter(height=0.06, width=0.2)) +
-  geom_point(data=H_s32, aes(x=as.numeric(as.character(Final_Stages)), fill=stagecolors[7]), colour="black", pch=21, size=4, position=position_jitter(height=0.06, width=0.2)) +
-    scale_fill_identity(name="Stage", 
-                       breaks=c(stagecolors[1], stagecolors[2], stagecolors[3], stagecolors[4], stagecolors[5], stagecolors[6], stagecolors[7]),
-                       labels=c(25, 26, 27, 28, 29, 31, 32), 
-                       guide="legend") +
-  theme(legend.background = element_rect(fill="white",
-                                  size=0.75, linetype="solid", 
-                                  colour ="black")) + 
-  scale_y_continuous(breaks = c(0, 1))+
-  theme(axis.text.y=element_text(size=14, colour= "black")) +
-  theme(axis.text.x=element_text(size=14, colour= "black")) +
-  theme(axis.title.x=element_text(size=14, colour = "black")) +
-  theme(axis.title.y=element_text(size=14, colour = "black"))+
-  labs(y = "Hatching response \n", 
-       x = "\n Developmental stage")+
-  theme_cowplot(font_size = 14, line_size = 1)+
-    theme(legend.justification = c(0, 1), legend.position = c(0.05,1))
-
-plot.stageGLM
+# #stagecolors <- c("black", "brown2", "orange1", "sienna4", "limegreen", "forestgreen")
+# stagecolors <- brewer.pal("BrBG", n=11)
+# 
+# plot.stageGLM <- ggplot(Diasp.df, aes(x=as.numeric(as.character(Final_Stages)), y=as.numeric(as.character(HorNH)))) +
+#   stat_smooth(method = "glm", method.args=list(family="binomial"), color="black", linetype="dashed") +
+#   geom_point(data=NH_s25, aes(x=as.numeric(as.character(Final_Stages)), fill=stagecolors[1]), colour="black", pch=21, size=4, position=position_jitter(height=0.06, width=0.2)) +
+#   geom_point(data=NH_s26, aes(x=as.numeric(as.character(Final_Stages)), fill=stagecolors[2]), colour="black", pch=21, size=4, position=position_jitter(height=0.06, width=0.2)) +
+#   geom_point(data=NH_s27, aes(x=as.numeric(as.character(Final_Stages)), fill=stagecolors[3]), colour="black", pch=21, size=4, position=position_jitter(height=0.06, width=0.2)) +
+#   geom_point(data=NH_s28, aes(x=as.numeric(as.character(Final_Stages)), fill=stagecolors[4]), colour="black", pch=21, size=4, position=position_jitter(height=0.06, width=0.2)) +
+#   geom_point(data=H_s28, aes(x=as.numeric(as.character(Final_Stages)), fill=stagecolors[4]), colour="black", pch=21, size=4, position=position_jitter(height=0.06, width=0.2)) +
+#   geom_point(data=NH_s29, aes(x=as.numeric(as.character(Final_Stages)), fill=stagecolors[5]), colour="black", pch=21, size=4, position=position_jitter(height=0.06, width=0.2)) +
+#   geom_point(data=H_s29, aes(x=as.numeric(as.character(Final_Stages)), fill=stagecolors[5]), colour="black", pch=21, size=4, position=position_jitter(height=0.06, width=0.2)) +
+#   geom_point(data=H_s31, aes(x=as.numeric(as.character(Final_Stages)), fill=stagecolors[6]), colour="black", pch=21, size=4, position=position_jitter(height=0.06, width=0.2)) +
+#   geom_point(data=H_s32, aes(x=as.numeric(as.character(Final_Stages)), fill=stagecolors[7]), colour="black", pch=21, size=4, position=position_jitter(height=0.06, width=0.2)) +
+#     scale_fill_identity(name="Stage", 
+#                        breaks=c(stagecolors[1], stagecolors[2], stagecolors[3], stagecolors[4], stagecolors[5], stagecolors[6], stagecolors[7]),
+#                        labels=c(25, 26, 27, 28, 29, 31, 32), 
+#                        guide="legend") +
+#   theme(legend.background = element_rect(fill="white",
+#                                   size=0.75, linetype="solid", 
+#                                   colour ="black")) + 
+#   scale_y_continuous(breaks = c(0, 1))+
+#   theme(axis.text.y=element_text(size=14, colour= "black")) +
+#   theme(axis.text.x=element_text(size=14, colour= "black")) +
+#   theme(axis.title.x=element_text(size=14, colour = "black")) +
+#   theme(axis.title.y=element_text(size=14, colour = "black"))+
+#   labs(y = "Hatching response \n", 
+#        x = "\n Developmental stage")+
+#   theme_cowplot(font_size = 14, line_size = 1)+
+#     theme(legend.justification = c(0, 1), legend.position = c(0.05,1))
+# 
+# plot.stageGLM
 ```
 
 ```{r}
-show_col(stagecolors)
+#stagecolors <- brewer.pal("BrBG", n=11)
+#show_col(stagecolors)
+
+#colfunc<-colorRampPalette(c("red","yellow","springgreen","royalblue", "purple"))
+#plot(rep(1,7),col=(colfunc(7)), pch=19,cex=2)
+
+selectedcolors <- c("red", "orange", "gold", "greenyellow", "springgreen4", "royalblue", "slateblue4")
+show_col(selectedcolors)
+```
+
+```{r}
+# plot.LL.GLM <- ggplot(Diasp.df, aes(x=as.numeric(as.character(JJAC_total)), y=as.numeric(as.character(HorNH)))) +
+#   stat_smooth(method = "glm", method.args=list(family="binomial"), color="black", linetype="dashed") +
+#   geom_point(data=NH_s25, aes(x=as.numeric(as.character(JJAC_total)), fill=stagecolors[1]), colour="black", pch=21, size=2, position=position_jitter(height=0.06)) +
+#   geom_point(data=NH_s26, aes(x=as.numeric(as.character(JJAC_total)), fill=stagecolors[3]), colour="black", pch=21, size=2, position=position_jitter(height=0.06)) +
+#   geom_point(data=NH_s27, aes(x=as.numeric(as.character(JJAC_total)), fill=stagecolors[5]), colour="black", pch=21, size=2, position=position_jitter(height=0.06)) +
+#   geom_point(data=NH_s28, aes(x=as.numeric(as.character(JJAC_total)), fill=stagecolors[7]), colour="black", pch=21, size=2, position=position_jitter(height=0.06)) +
+#   geom_point(data=H_s28, aes(x=as.numeric(as.character(JJAC_total)), fill=stagecolors[7]), colour="black", pch=21, size=2, position=position_jitter(height=0.06)) +
+#   geom_point(data=NH_s29, aes(x=as.numeric(as.character(JJAC_total)), fill=stagecolors[9]), colour="black", pch=21, size=2, position=position_jitter(height=0.06)) +
+#   geom_point(data=H_s29, aes(x=as.numeric(as.character(JJAC_total)), fill=stagecolors[9]), colour="black", pch=21, size=2, position=position_jitter(height=0.06)) +
+#   geom_point(data=H_s31, aes(x=as.numeric(as.character(JJAC_total)), fill=stagecolors[10]), colour="black", pch=21, size=2, position=position_jitter(height=0.06)) +
+#   geom_point(data=H_s32, aes(x=as.numeric(as.character(JJAC_total)), fill=stagecolors[11]), colour="black", pch=21, size=2, position=position_jitter(height=0.06)) +
+#     scale_fill_identity(name="Stage", 
+#                        breaks=c(stagecolors[1], stagecolors[3], stagecolors[5], stagecolors[7], stagecolors[9], stagecolors[10], stagecolors[11]),
+#                        labels=c(25, 26, 27, 28, 29, 31, 32), 
+#                        guide="legend") +
+#   theme(legend.background = element_rect(fill="white",
+#                                   size=0.75, linetype="solid", 
+#                                   colour ="black")) + 
+#   scale_y_continuous(breaks = c(0, 1))+
+#   theme(axis.text.y=element_text(size=12, colour= "black")) +
+#   theme(axis.text.x=element_text(size=12, colour= "black")) +
+#   theme(axis.title.x=element_text(size=12, colour = "black")) +
+#   theme(axis.title.y=element_text(size=12, colour = "black"))+
+#   labs(y = "Hatching response", 
+#        x = "Number of neuromasts")+
+#   theme_cowplot(font_size = 12, line_size = 1)+
+#   theme(legend.justification = c(0, 1), legend.position = c(0.05,1))
+# 
+# plot.LL.GLM
+```
+
+```{r}
 plot.LL.GLM <- ggplot(Diasp.df, aes(x=as.numeric(as.character(JJAC_total)), y=as.numeric(as.character(HorNH)))) +
   stat_smooth(method = "glm", method.args=list(family="binomial"), color="black", linetype="dashed") +
-  geom_point(data=NH_s25, aes(x=as.numeric(as.character(JJAC_total)), fill=stagecolors[1]), colour="black", pch=21, size=2, position=position_jitter(height=0.06)) +
-  geom_point(data=NH_s26, aes(x=as.numeric(as.character(JJAC_total)), fill=stagecolors[3]), colour="black", pch=21, size=2, position=position_jitter(height=0.06)) +
-  geom_point(data=NH_s27, aes(x=as.numeric(as.character(JJAC_total)), fill=stagecolors[5]), colour="black", pch=21, size=2, position=position_jitter(height=0.06)) +
-  geom_point(data=NH_s28, aes(x=as.numeric(as.character(JJAC_total)), fill=stagecolors[7]), colour="black", pch=21, size=2, position=position_jitter(height=0.06)) +
-  geom_point(data=H_s28, aes(x=as.numeric(as.character(JJAC_total)), fill=stagecolors[7]), colour="black", pch=21, size=2, position=position_jitter(height=0.06)) +
-  geom_point(data=NH_s29, aes(x=as.numeric(as.character(JJAC_total)), fill=stagecolors[9]), colour="black", pch=21, size=2, position=position_jitter(height=0.06)) +
-  geom_point(data=H_s29, aes(x=as.numeric(as.character(JJAC_total)), fill=stagecolors[9]), colour="black", pch=21, size=2, position=position_jitter(height=0.06)) +
-  geom_point(data=H_s31, aes(x=as.numeric(as.character(JJAC_total)), fill=stagecolors[10]), colour="black", pch=21, size=2, position=position_jitter(height=0.06)) +
-  geom_point(data=H_s32, aes(x=as.numeric(as.character(JJAC_total)), fill=stagecolors[11]), colour="black", pch=21, size=2, position=position_jitter(height=0.06)) +
+  geom_point(data=NH_s25, aes(x=as.numeric(as.character(JJAC_total)), fill=selectedcolors[1]), colour="black", pch=21, size=3, position=position_jitter(height=0.06)) +
+  geom_point(data=NH_s26, aes(x=as.numeric(as.character(JJAC_total)), fill=selectedcolors[2]), colour="black", pch=21, size=3, position=position_jitter(height=0.06)) +
+  geom_point(data=NH_s27, aes(x=as.numeric(as.character(JJAC_total)), fill=selectedcolors[3]), colour="black", pch=21, size=3, position=position_jitter(height=0.06)) +
+  geom_point(data=NH_s28, aes(x=as.numeric(as.character(JJAC_total)), fill=selectedcolors[4]), colour="black", pch=21, size=3, position=position_jitter(height=0.06)) +
+  geom_point(data=H_s28, aes(x=as.numeric(as.character(JJAC_total)), fill=selectedcolors[4]), colour="black", pch=21, size=3, position=position_jitter(height=0.06)) +
+  geom_point(data=NH_s29, aes(x=as.numeric(as.character(JJAC_total)), fill=selectedcolors[5]), colour="black", pch=21, size=3, position=position_jitter(height=0.06)) +
+  geom_point(data=H_s29, aes(x=as.numeric(as.character(JJAC_total)), fill=selectedcolors[5]), colour="black", pch=21, size=3, position=position_jitter(height=0.06)) +
+  geom_point(data=H_s31, aes(x=as.numeric(as.character(JJAC_total)), fill=selectedcolors[6]), colour="black", pch=21, size=3, position=position_jitter(height=0.06)) +
+  geom_point(data=H_s32, aes(x=as.numeric(as.character(JJAC_total)), fill=selectedcolors[7]), colour="black", pch=21, size=3, position=position_jitter(height=0.06)) +
     scale_fill_identity(name="Stage", 
-                       breaks=c(stagecolors[1], stagecolors[3], stagecolors[5], stagecolors[7], stagecolors[9], stagecolors[10], stagecolors[11]),
+                       breaks=c(selectedcolors[1], selectedcolors[2], selectedcolors[3], selectedcolors[4], selectedcolors[5], selectedcolors[6], selectedcolors[7]),
                        labels=c(25, 26, 27, 28, 29, 31, 32), 
                        guide="legend") +
   theme(legend.background = element_rect(fill="white",
@@ -497,33 +548,65 @@ plot.LL.GLM <- ggplot(Diasp.df, aes(x=as.numeric(as.character(JJAC_total)), y=as
   theme(axis.title.x=element_text(size=12, colour = "black")) +
   theme(axis.title.y=element_text(size=12, colour = "black"))+
   labs(y = "Hatching response", 
-       x = "Number of neuromasts")+
+       x = "# of neuromasts")+
   theme_cowplot(font_size = 12, line_size = 1)+
-  theme(legend.justification = c(0, 1), legend.position = c(0.05,1))
+  theme(legend.justification = c(0, 1), legend.position = c(0.05,1))+
+  geom_vline(xintercept=c(246), linetype="dotted")
 
 plot.LL.GLM
 ```
 
-
+ 
 ```{r}
-ggsave("~/Desktop/Figure4v3.pdf",
+ggsave("~/Desktop/HatchNM.pdf",
  plot = plot.LL.GLM, # or give ggplot object name as in myPlot,
  width = 15, height = 10,
  units = "cm", # other options c("in", "cm", "mm"),
- dpi = 300)
+ dpi = 300,
+ useDingbats=FALSE)
 ```
 
 combine plots 
-```{r}
-Figure4v2 <- plot_grid(Figure4c, plot.LL.GLM, labels = "AUTO", ncol = 1, align = 'v')
 
-ggsave("~/Desktop/Figure4v2.pdf",
- plot = Figure4v2, # or give ggplot object name as in myPlot,
- width = 20, height = 20,
+```{r}
+Figure4b<-ggplot(data=Diasp.df, aes(x=Stimulus_start_age, y=JJAC_total, group=HorNH)) + 
+  geom_jitter(data=NoHat, pch=19, size=2, position=position_jitter(width=0.15)) +
+  geom_jitter(data=Hat, pch=1, size=2,  position=position_jitter(width=0.15)) +
+  scale_y_continuous(limits=c(0, 450),
+                     breaks=c(0, 100, 200, 300, 400),
+                     labels=c("    ", "    ", "    ", "    ", "    "))+
+  scale_x_continuous(limits=c(3, 5.5),
+                     breaks=c(3, 3.5, 4, 4.5, 5, 5.5),
+                     labels=c("3", "3.5", "4", "4.5", "5", "5.5"))+
+  scale_shape_manual(name=NULL, 
+                     values=c(19, 1),
+                     labels=c("No hatch", "Hatch")) +
+  labs(x = "Age (d)", 
+       y = NULL) +
+  theme_cowplot(font_size = 12, line_size = 1) +
+  theme(axis.text.y=element_text(size=12, colour= "black")) +
+  theme(axis.text.x=element_text(size=12, colour= "black")) +
+  theme(axis.title.x=element_text(size=12, colour = "black")) +
+  theme(axis.title.y=element_text(size=12, colour = "black"))+
+  geom_hline(yintercept=c(246), linetype="dotted")
+Figure4b
+
+# first align the top-row plot (Figure4a) with the left-most plots of the next two lines
+
+# top row
+plots <- align_plots(Figure4a, Figure4c, plot.LL.GLM, align = 'v', axis = 'l')
+# then build the top row
+top_row <- plot_grid(plots[[1]], Figure4b, labels = c('A', 'B'), label_size = 12)
+
+# then combine with the bottom row for final plot
+Figure4v8 <- plot_grid(top_row, plots[[2]], plots[[3]], labels = c(' ', 'C', 'D'), label_size = 12, ncol = 1)
+
+ggsave("~/Desktop/Figure4v8.pdf",
+ plot = Figure4v8, # or give ggplot object name as in myPlot,
+ width = 15, height = 20,
  units = "cm", # other options c("in", "cm", "mm"),
  dpi = 300, 
  useDingbats=FALSE)
-
 ```
 
 ```{r}
@@ -549,6 +632,225 @@ anova(glmm3,glmm4) #interaction
 Anova(glmm4) ####### all the effects. 
 ```
 
+
+#### supplementary table
+
+```{r}
+Diasp.df$JJ_revised_total <- Diasp.df$JJ_face_middle_totalsides +
+  Diasp.df$JJ_face_yolk_totalsides +
+  Diasp.df$JJ_face_mouth_totalsides +
+  Diasp.df$JJ_face_undereye_totalsides +
+  (Diasp.df$JJ_body_ALL_1side)*2 +
+  (Diasp.df$JJ_body_PLL_1side)*2 +
+  Diasp.df$JJ_body_dorsal_totalsides
+
+Diasp.df$AC_revised_total <- Diasp.df$AC_face_middle_totalsides +
+  Diasp.df$AC_face_yolk_totalsides +
+  Diasp.df$AC_face_mouth_totalsides +
+  Diasp.df$AC_face_undereye_totalsides +
+  (Diasp.df$AC_body_ALL_1side)*2 +
+  (Diasp.df$AC_body_PLL_1side)*2 +
+  Diasp.df$AC_body_dorsal_totalsides
+```
+
+Take the average of my counts and Avital's counts. 
+```{r}
+Diasp.df$JJAC_total <- (Diasp.df$JJ_revised_total + Diasp.df$AC_revised_total)/2
+#Diasp.df$JJAC_total_excel <- (Diasp.df$JJ_total + Diasp.df$AC_total)/2
+
+#Diasp.df$Difference <- Diasp.df$JJAC_total - Diasp.df$JJAC_total_excel
+```
+
+```{r}
+library(sjPlot)
+str(Diasp.df)
+
+neuromast_supp <- 
+  Diasp.df %>%
+  group_by(Final_Stages) %>%
+  summarize("n" = n(), 
+            "Infraorbital" = mean((JJ_infraorbital_totalsides + AC_infraorbital_totalsides)/2),
+            "Supraorbital*" = mean((JJ_supraorbital_1side*2 + AC_supraorbital_1side*2)/2),
+            "Naris" = mean((JJ_naris_totalsides + AC_naris_totalsides)/2),
+            "Oral" = mean((JJ_oral_totalsides + AC_oral_totalsides)/2), 
+            "Ventral" = mean((JJ_ventral_totalsides + AC_ventral_totalsides)/2),
+            "Middle*" = mean((JJ_middle_1side*2 + AC_middle_1side*2)/2), 
+            "Dorsal" = mean((JJ_dorsal_totalsides + AC_dorsal_totalsides)/2), 
+            "Total" = mean((JJ_total + AC_total)/2)
+            )
+kable(neuromast_supp, digits=1)
+
+
+tab_df(neuromast_supp, 
+       title = "Supplementary Table 1: Neuromast Ontogeny", 
+       file="neuromast_supp.doc", 
+       alternate.rows = TRUE, 
+       footnotes = "* assumed symmetry",
+       show.footnote=TRUE
+       )
+
+# neuromast_se_supp <- 
+#   Diasp.df %>%
+#   group_by(Final_Stages) %>%
+#   summarize("n" = n(), 
+#             "InfraorbitalSE" = sd((JJ_infraorbital_totalsides + AC_infraorbital_totalsides)/2)/sqrt(n()),
+#             "SupraorbitalSE*" = sd((JJ_supraorbital_1side*2 + AC_supraorbital_1side*2)/2)/sqrt(n()),
+#             "NarisSE" = sd((JJ_naris_totalsides + AC_naris_totalsides)/2)/sqrt(n()),
+#             "OralSE" = sd((JJ_oral_totalsides + AC_oral_totalsides)/2)/sqrt(n()), 
+#             "VentralSE" = sd((JJ_ventral_totalsides + AC_ventral_totalsides)/2)/sqrt(n()),
+#             "MiddleSE*" = sd((JJ_middle_1side*2 + AC_middle_1side*2)/2)/sqrt(n()), 
+#             "DorsalSE" = sd((JJ_dorsal_totalsides + AC_dorsal_totalsides)/2)/sqrt(n()), 
+#             "TotalSE" = sd((JJ_total + AC_total)/2)/sqrt(n())
+#             )
+# kable(neuromast_se_supp, digits=0)
+#   
+# 
+# tab_df(neuromast_se_supp, 
+#        title = "Supplementary Table 1: Neuromast Ontogeny SE", 
+#        #file="neuromast_supp.doc", 
+#        alternate.rows = TRUE, 
+#        footnotes = "* assumed symmetry",
+#        show.footnote=TRUE
+#        )
+# 
+kable(neuromast_se_supp, digits=2)
+```
+```{r}
+neuromast_lines <- 
+  Diasp.df %>%
+  group_by(Final_Stages) %>%
+  summarize("Infraorbital" = mean((JJ_infraorbital_totalsides + AC_infraorbital_totalsides)/2),
+            "Supraorbital" = mean((JJ_supraorbital_1side*2 + AC_supraorbital_1side*2)/2),
+            "Naris" = mean((JJ_naris_totalsides + AC_naris_totalsides)/2),
+            "Oral" = mean((JJ_oral_totalsides + AC_oral_totalsides)/2), 
+            "Ventral" = mean((JJ_ventral_totalsides + AC_ventral_totalsides)/2),
+            "Middle" = mean((JJ_middle_1side*2 + AC_middle_1side*2)/2), 
+            "Dorsal" = mean((JJ_dorsal_totalsides + AC_dorsal_totalsides)/2)
+            )
+kable(neuromast_lines, digits=1)
+
+neuromast_lines_long <- neuromast_lines %>% 
+  pivot_longer(-c(Final_Stages), names_to="line", values_to = "meanNM")
+kable(neuromast_lines_long, digits=1)
+
+neuromast_totals <- 
+  Diasp.df %>%
+  group_by(Final_Stages) %>%
+  summarize("Total" = mean((JJ_total + AC_total)/2), 
+            "TotalSEM" = se((JJ_total + AC_total)/2)/sqrt(n())
+            )
+kable(neuromast_totals, digits=1)
+```
+
+```{r}
+neuromast_lines <- 
+  Diasp.df %>%
+  group_by(Final_Stages) %>%
+  summarize("n" = n(), 
+            "Infraorbital" = mean((JJ_infraorbital_totalsides + AC_infraorbital_totalsides)/2),
+            "Supraorbital" = mean((JJ_supraorbital_1side*2 + AC_supraorbital_1side*2)/2),
+            "Naris" = mean((JJ_naris_totalsides + AC_naris_totalsides)/2),
+            "Oral" = mean((JJ_oral_totalsides + AC_oral_totalsides)/2), 
+            "Ventral" = mean((JJ_ventral_totalsides + AC_ventral_totalsides)/2),
+            "Middle" = mean((JJ_middle_1side*2 + AC_middle_1side*2)/2), 
+            "Dorsal" = mean((JJ_dorsal_totalsides + AC_dorsal_totalsides)/2), 
+            )
+
+neuromast_lines_se <- 
+  Diasp.df %>%
+  group_by(Final_Stages) %>%
+  summarize("n" = n(), 
+            "InfraorbitalSE" = sd((JJ_infraorbital_totalsides + AC_infraorbital_totalsides)/2)/sqrt(n()),
+            "SupraorbitalSE" = sd((JJ_supraorbital_1side*2 + AC_supraorbital_1side*2)/2)/sqrt(n()),
+            "NarisSE" = sd((JJ_naris_totalsides + AC_naris_totalsides)/2)/sqrt(n()),
+            "OralSE" = sd((JJ_oral_totalsides + AC_oral_totalsides)/2)/sqrt(n()),
+            "VentralSE" = sd((JJ_ventral_totalsides + AC_ventral_totalsides)/2)/sqrt(n()),
+            "MiddleSE" = sd((JJ_middle_1side*2 + AC_middle_1side*2)/2)/sqrt(n()),
+            "DorsalSE" = sd((JJ_dorsal_totalsides + AC_dorsal_totalsides)/2)/sqrt(n())
+            )
+
+neuromast_lines_long <- neuromast_lines %>% 
+  pivot_longer(-c(Final_Stages,n), names_to="line", values_to = "meanNM")
+
+neuromast_lines_se_long <- neuromast_lines_se %>% 
+  pivot_longer(-c(Final_Stages,n), names_to="line", values_to = "seNM")
+
+neuromast_lines_long$seNM <- neuromast_lines_se_long$seNM
+kable(neuromast_lines_long, digits=1)
+```
+
+```{r}
+line_levels <- c("Infraorbital", "Supraorbital", "Naris", "Oral", "Ventral", "Middle", "Dorsal")
+line_colors <- c("#CB35DB", "#4BBF00", "#26E3FF", "#D1CA46", "#E0700B", "#0015B4", "#C61821")
+neuromast_lines_long$line <- factor(neuromast_lines_long$line, levels=line_levels, ordered=TRUE)
+
+max(neuromast_lines_long$meanNM)
+```
+
+```{r}
+plot.nm.lines <- ggplot(neuromast_lines_long, aes(x=Final_Stages, y=meanNM, color=line)) +
+  geom_errorbar(aes(ymin=meanNM-seNM, ymax=meanNM+seNM), width=0.05, size=1.5) +
+  geom_line(aes(color=line), size=1)+
+  geom_point(size=3) +
+  # geom_text_repel(
+  #   aes(label=line, 
+  #       size=4.5, 
+  #       point.padding = .2, 
+  #       box.padding = .3, 
+  #       force = 1, 
+  #       min.segment.length = 0)
+  # ) +
+  scale_x_continuous(limits=c(25,32),
+                     breaks=c(25, 26, 27, 28, 29, 30, 31, 32),
+                     labels=c("25", "26", "27", "28", "29", "30", "31", "32"))+
+  scale_y_continuous(limits = c(0, 180), 
+                     breaks=c(0, 60, 120, 180),
+                     labels=c("0", "60", "120", "180")
+                     ) +
+  labs(x = "Stage",
+       y = "# of neuromasts") +
+  scale_color_manual(name=NULL,
+                    values=line_colors) +
+                    #labels=c("Treated", "Control")) +
+  theme_cowplot(font_size = 12, line_size = 1) +
+  theme(axis.text.y=element_text(size=12, colour= "black")) +
+  theme(axis.text.x=element_text(size=12, colour= "black")) +
+  theme(axis.title.x=element_text(size=12, colour = "black")) +
+  theme(axis.title.y=element_text(size=12, colour = "black")) +
+  theme(legend.position = "none")
+  #theme(legend.justification = c(0,1), legend.position = c(0.05,1))
+
+plot.nm.lines
+
+```
+
+```{r}
+ggsave("~/Desktop/NMlines.pdf",
+ plot = plot.nm.lines, # or give ggplot object name as in myPlot,
+ width = 15, height = 10,
+ units = "cm", # other options c("in", "cm", "mm"),
+ dpi = 300, 
+ useDingbats=FALSE)
+```
+
+```{r}
+Diasp.df$JJAC_naris_totalsides <- (Diasp.df$JJ_naris_totalsides + Diasp.df$AC_naris_totalsides)/2
+Diasp.df$JJAC_ventral_totalsides <- (Diasp.df$JJ_ventral_totalsides + Diasp.df$AC_naris_totalsides)/2
+Diasp.df$JJAC_oral_totalsides <- (Diasp.df$JJ_oral_totalsides + Diasp.df$AC_oral_totalsides)/2
+Diasp.df$JJAC_infraorbital_totalsides <- (Diasp.df$JJ_infraorbital_totalsides + Diasp.df$AC_infraorbital_totalsides)/2
+Diasp.df$JJAC_supraorbital_frontal_totalsides <- (Diasp.df$JJ_supraorbital_frontal_totalsides + Diasp.df$AC_supraorbital_frontal_totalsides)/2
+Diasp.df$JJAC_supraorbital_1side <- (Diasp.df$JJ_supraorbital_1side + Diasp.df$AC_supraorbital_1side)/2
+Diasp.df$JJAC_middle_1side <- (Diasp.df$JJ_middle_1side + Diasp.df$AC_middle_1side)/2
+Diasp.df$JJAC_dorsal_totalsides <- (Diasp.df$JJ_dorsal_totalsides + Diasp.df$AC_dorsal_totalsides)/2
+
+hist(Diasp.df$JJ_naris_totalsides)
+temp1<-glmer(JJAC_naris_totalsides ~ 1 + (1|Clutch), family=Gamma(inverse), data=Diasp.df)
+temp2<-glmer(JJAC_naris_totalsides ~ Final_Stages + (1|Clutch), family=Gamma(inverse), data=Diasp.df)
+
+anova(temp1, temp2) #line effect
+anova(temp2, temp3) #stage effect
+```
+
 ## Read in all data
 ```{r} 
 all_data<-read.csv("20200207_LatEARalLine.csv", header=TRUE, stringsAsFactors = FALSE)
@@ -556,6 +858,8 @@ all_data<-read.csv("20200207_LatEARalLine.csv", header=TRUE, stringsAsFactors = 
 
 ```{r}
 all_data$Mean_VOR<-(all_data$Amplitude_left+all_data$Amplitude_right)/2
+
+all_data$Stimulus_start_age <- all_data$Age_days + all_data$Stimulus_h/24 + all_data$Stimulus_m/(24*60) + all_data$Stimulus_s/(24*60*60) # Stimulus_start_age is in days
 
 jiggling.df <- subset(all_data, Experiment=="Individual")
 playback.df <- subset(all_data, Experiment=="Tray")
@@ -663,9 +967,11 @@ Jiggling_by_age_groups_3<-
   jiggling.df %>%
   group_by(Age_groups_three) %>%
   summarize(num_tested = n(),
+            min_age = min(Stimulus_start_age), 
+            max_age = max(Stimulus_start_age), 
             mean_stim_start_age = mean(Stimulus_start_age),
             SD = sd(Stimulus_start_age),
-            SE = sd(Stimulus_start_age)/sqrt(n())
+            SE = sd(Stimulus_start_age)/sqrt(n()), 
             )
 kable(Jiggling_by_age_groups_3,digits=4)
 ```
@@ -677,6 +983,8 @@ Jiggling_by_stage<-
   jiggling.df %>%
   group_by(Age_groups_three) %>%
   summarize(num_tested = n(),
+            min_stage = min(Jiggling_stage, na.rm=T), 
+            max_stage = max(Jiggling_stage, na.rm=T), 
             mean_stage = mean(Jiggling_stage, na.rm=T),
             SD = sd(Jiggling_stage, na.rm=T),
             SE = sd(Jiggling_stage, na.rm=T)/sqrt(n())
@@ -719,19 +1027,44 @@ kable(Jiggling_by_stage,digits=4)
 
 How often did we measure VOR? 
 ```{r}
+
+str(jiggling.df)
 VOR_stats <-
   jiggling.df %>%
   filter(!is.na(Sample_name)) %>%
   group_by(Age_groups_four) %>%
   summarize(num_tested = n(),
-            meanVOR = mean(Average_amplitude),
-            SD = sd(Average_amplitude),
-            SE = sd(Average_amplitude)/sqrt(n())
+            meanVOR = mean(Mean_VOR),
+            SD = sd(Mean_VOR),
+            SE = sd(Mean_VOR)/sqrt(n())
             )
-
 kable(VOR_stats,digits=4)
 
 79+32
+
+# #How many clutches is this from?
+# older_group_jiggling<-rbind(middle_jiggling, older_jiggling)
+# 
+# temp <-
+#   older_group_jiggling %>%
+#   filter(!is.na(Sample_name)) %>%
+#   group_by(Clutch) %>%
+#   summarize(num_tested = n(),
+#             meanVOR = mean(Average_amplitude),
+#             SE = sd(Average_amplitude)/sqrt(n())
+#             )
+# kable(temp,digits=4)
+# 
+# temp2 <-
+#   temp %>%
+#   group_by(Age_groups_four) %>%
+#   summarize(num_tested = n(),
+#             mean = mean(meanVOR),
+#             SE = sd(meanVOR)/sqrt(n())
+#             )
+# kable(temp2,digits=4)
+
+
 ```
 Did we only measure VOR for those that hatching to jiggling cues? No, but almost. 
 ```{r}
@@ -769,6 +1102,7 @@ younger_jiggling_high <- subset(jiggling.df, jiggling.df$Age_groups_four=="4d_hi
 younger_jiggling <- subset(jiggling.df, jiggling.df$Age_groups_three=="young")
 middle_jiggling <- subset(jiggling.df, jiggling.df$Age_groups_four=="4d")
 older_jiggling <- subset(jiggling.df, jiggling.df$Age_groups_four=="5d")
+middle_and_older_jiggling <- subset(jiggling.df, jiggling.df$Age_groups_four=="5d"|jiggling.df$Age_groups_four=="4d")
 ```
 
 Check that we checked lateral line for all the younger age group individuals that DID hatch and WERE treated (N=3). 
@@ -861,6 +1195,12 @@ younger_measured_VOR <- younger_jiggling %>%
 
 ### younger low age group
 
+How many individuals lack both vestibular function and lateral line function & hatched?
+```{r}
+GT_Hat_lack<-subset(younger_jiggling_low, younger_jiggling_low$Treatment=="G" & younger_jiggling_low$Response==1)
+
+```
+
 ```{r}
 Younger_low_by_clutch<-
   younger_jiggling_low %>%
@@ -869,7 +1209,9 @@ Younger_low_by_clutch<-
             num_hatched = sum(Response),
             propH = mean(sum(Response)/n())
             )
+Younger_low_by_clutch$AgeD <- 4.17
 kable(Younger_low_by_clutch,digits=4)
+
 ```
 The proportion hatched here is per treatment, per clutch. 
 
@@ -899,6 +1241,7 @@ Younger_high_by_clutch<-
             num_hatched = sum(Response),
             propH = mean(sum(Response)/n())
             )
+Younger_high_by_clutch$AgeD <- 4.2
 kable(Younger_high_by_clutch,digits=4)
 ```
 
@@ -929,6 +1272,7 @@ Middle_by_clutch<-
             num_hatched = sum(Response),
             propH = mean(sum(Response)/n())
             )
+Middle_by_clutch$AgeD <- 4.7
 kable(Middle_by_clutch,digits=4)
 ```
 
@@ -956,6 +1300,7 @@ Older_by_clutch<-
             num_hatched = sum(Response),
             propH = mean(sum(Response)/n())
             )
+Older_by_clutch$AgeD <- 5.4
 kable(Older_by_clutch,digits=4)
 ```
 
@@ -1022,7 +1367,7 @@ nohat_young_jig_low_NT <- subset(young_jig_low_NT, young_jig_low_NT$Response == 
 ```
 
 ```{r}
-# just prior to vestibular function, at age 4.2 d, gentamicin reduced the hatching response to jiggling from 41% to 1.5%, revealing a lateral line contribution to risk assessment. 
+# just after to vestibular function, at age 4.2 d, gentamicin reduced the hatching response to jiggling from 41% to 1.5%, revealing a lateral line contribution to risk assessment. 
 
 young_jig_high_G <- subset(younger_jiggling_high, younger_jiggling_high$Treatment=="G") #129 individuals
 
@@ -1098,6 +1443,7 @@ Latency_younger_low_by_clutch <-
             SD = sd(Latency_min, na.rm=T), 
             SE = sd(Latency_min, na.rm=T)/sqrt(n())
             )
+Latency_younger_low_by_clutch$AgeD <- 4.17
 kable(Latency_younger_low_by_clutch,digits=4)
 ```
 
@@ -1124,6 +1470,7 @@ Latency_younger_high_by_clutch <-
             SD = sd(Latency_min, na.rm=T), 
             SE = sd(Latency_min, na.rm=T)/sqrt(n())
             )
+Latency_younger_high_by_clutch$AgeD <- 4.2
 kable(Latency_younger_high_by_clutch,digits=4)
 ```
 
@@ -1151,6 +1498,7 @@ Latency_middle_by_clutch<-
             SD = sd(Latency_min, na.rm=T), 
             SE = sd(Latency_min, na.rm=T)/sqrt(n())
             )
+Latency_middle_by_clutch$AgeD <- 4.7
 kable(Latency_middle_by_clutch,digits=4)
 ```
 
@@ -1177,6 +1525,7 @@ Latency_older_by_clutch<-
             SD = sd(Latency_min, na.rm=T), 
             SE = sd(Latency_min, na.rm=T)/sqrt(n())
             )
+Latency_older_by_clutch$AgeD <- 5.4
 kable(Latency_older_by_clutch,digits=4)
 ```
 
@@ -1221,11 +1570,13 @@ fit5<-fitdistr(jiggling.df$Latency_min[!is.na(jiggling.df$Latency_min)], "weibul
 
 AIC(fit1,fit2, fit3, fit4, fit5) # best to do gamma
 ```
+
 Both the gamma and Weibull distributions can be seen as generalisations of the exponential distribution. If we look at the exponential distribution as describing the waiting time of a Poisson process (the time we have to wait until an event happens, if that event is equally likely to occur in any time interval), then the Γ(𝑘,𝜃) distribution describes the time we have to wait for 𝑘 independent events to occur.
 
 On the other hand, the Weibull distribution effectively describes the time we have to wait for one event to occur, if that event becomes more or less likely with time. 
 
 Consider latencies to be non-normal --> do an non-parametric analysis with glmms, family=gamma 
+
 ```{r}
 glmm0 <- glmer(Latency_min ~ 1 + (1|Clutch), family=Gamma(inverse), data=jiggling.df)
 glmm1 <- glmer(Latency_min ~ Treatment + (1|Clutch), family=Gamma(inverse), data=jiggling.df)
@@ -1237,6 +1588,21 @@ anova(glmm1, glmm3) # Age effect
 anova(glmm2, glmm3) # Treatment effect
 anova(glmm3, glmm4) # interaction effect
 ```
+
+#family=weibull 
+```{r}
+library(gamlss)
+glmm0 <- gamlss(Latency_min ~ 1 + (1|Clutch), family=WEI3, method=CG(), data=jiggling.df)
+glmm1 <- glmer(Latency_min ~ Treatment + (1|Clutch), family=Gamma(inverse), data=jiggling.df)
+glmm2 <- glmer(Latency_min ~ Age_groups_four + (1|Clutch), family=Gamma(inverse), data=jiggling.df)
+glmm3 <- glmer(Latency_min ~ Treatment + Age_groups_four + (1|Clutch), family=Gamma(inverse), data=jiggling.df)
+glmm4 <- glmer(Latency_min ~ Treatment * Age_groups_four + (1|Clutch), family=Gamma(inverse), data=jiggling.df)
+
+anova(glmm1, glmm3) # Age effect
+anova(glmm2, glmm3) # Treatment effect
+anova(glmm3, glmm4) # interaction effect
+```
+
 
 Moving on: Here we perform separate binomial GLMs at each age, with grouped categories of treatment stimuli. 
 
@@ -1263,7 +1629,7 @@ kable(Latency_younger_low_by_response,digits=4)
 ```
 
 ```{r}
-# glmm for YOUNGER LOW
+# glmm for YOUNGER high
 temp0<-glmer(Latency_min ~ 1 + (1|Clutch), family=Gamma(inverse), data=younger_jiggling_high)
 temp1<-glmer(Latency_min ~ Treatment + (1|Clutch), family=Gamma(inverse), data=younger_jiggling_high)
 anova(temp0, temp1) #treatment effect
@@ -1307,11 +1673,20 @@ kable(Latency_middle_by_response,digits=4)
 ```
 
 ```{r}
+str(older_jiggling)
+quantile(older_jiggling$Stimulus_start_age)
+
 # glmm for OLDER (5d)
-temp0<-glmer(Latency_min ~ 1 + (1|Clutch), family=Gamma(inverse), data=older_jiggling)
 temp1<-glmer(Latency_min ~ Treatment + (1|Clutch), family=Gamma(inverse), data=older_jiggling)
-anova(temp0, temp1) #treatment effect
-#Anova(temp1)
+temp2<-glmer(Latency_min ~ Stimulus_start + (1|Clutch), family=Gamma(inverse), data=older_jiggling)
+temp3<-glmer(Latency_min ~ Treatment + Stimulus_start + (1|Clutch), family=Gamma(inverse), data=older_jiggling)
+temp5<-glmer(Latency_min ~ Treatment + Combined_stage + (1|Clutch), family=Gamma(inverse), data=older_jiggling)
+
+
+anova(temp2, temp3) #treatment effect
+anova(temp1, temp3) #age effect
+anova(temp1, temp5) #stage effect 
+
 ```
 
 How many actually hatched?
@@ -1327,6 +1702,24 @@ Latency_older_by_response <-
 kable(Latency_older_by_response,digits=4)
 ```
 
+```{r}
+# glmm for MIDDLE (4d) and OLDER (5d)
+
+#middle_and_older_jiggling <- subset(jiggling.df, jiggling.df$Age_groups_four=="5d"|jiggling.df$Age_groups_four=="4d")
+
+glmm0 <- glmer(Latency_min ~ 1 + (1|Clutch), family=Gamma(inverse), data=middle_and_older_jiggling)
+glmm1 <- glmer(Latency_min ~ Treatment + (1|Clutch), family=Gamma(inverse), data=middle_and_older_jiggling)
+glmm2 <- glmer(Latency_min ~ Age_groups_four + (1|Clutch), family=Gamma(inverse), data=middle_and_older_jiggling)
+glmm3 <- glmer(Latency_min ~ Treatment + Age_groups_four + (1|Clutch), family=Gamma(inverse), data=middle_and_older_jiggling)
+glmm4 <- glmer(Latency_min ~ Treatment * Age_groups_four + (1|Clutch), family=Gamma(inverse), data=middle_and_older_jiggling)
+
+anova(glmm1, glmm3) # Age effect
+anova(glmm2, glmm3) # Treatment effect
+anova(glmm3, glmm4) # interaction effect
+```
+
+
+
 # Figures
 
 ```{r}
@@ -1334,7 +1727,122 @@ treatmentcolors <- c('red', 'black')
 #linetypes<-c("dotted", "solid", "dashed")
 ```
 
-### PropH Figure
+### boxplots
+
+Combine summary data into one dataframe with all three age groups. 
+```{r}
+all_ages_by_clutch<-rbind(Younger_low_by_clutch, Younger_high_by_clutch, Middle_by_clutch, Older_by_clutch)
+kable(all_ages_by_clutch,digits=4)
+str(all_ages_by_clutch)
+```
+
+
+```{r}
+NT.jig<-subset(all_ages_by_clutch, all_ages_by_clutch$Treatment == "NT")
+GT.jig<-subset(all_ages_by_clutch, all_ages_by_clutch$Treatment == "G")
+
+plot.jiggle.hatch.v2 <- all_ages_by_clutch %>%
+  ggplot(aes(x=as.factor(AgeD), y=propH, color=Treatment))+ 
+    geom_boxplot(position="dodge", 
+             width=0.4, outlier.shape = NA)+ 
+    geom_jitter(data=NT.jig, aes(x=as.factor(AgeD), y=propH), colour="black", pch=16, size=2, position=position_jitter(width=0.1)) +
+  geom_jitter(data=GT.jig, aes(x=as.factor(AgeD), y=propH), colour="red", pch=16, size=2,  position=position_jitter(width=0.1)) +
+  #facet_wrap(facets=.~AgeD)+ 
+  #scale_x_continuous(limits=c(4.1,5.5),
+  #                   breaks=c(4.2, 4.7, 5.4),
+  #                   labels=c("4.2", "4.7", "5.4"))+
+  scale_y_continuous(limits = c(0, 1)) +
+  #scale_x_discrete(labels=c("G", "C")) +
+  labs(x = "Age (d)", 
+       y = "Proportion hatched") +
+  scale_color_manual(name=NULL,
+                     values=c(treatmentcolors[1], treatmentcolors[2]),
+                     labels=c("Treated", "Control")) +
+  theme_cowplot(font_size = 12, line_size = 1, font_family="Helvetica") +
+  theme(strip.text.x = element_text(size = 12, color = "black", face = "bold"),
+        strip.text.y = element_text(size = 12, color = "black", face = "bold")) + 
+  theme(axis.text.y=element_text(size=12, colour= "black")) +
+  theme(axis.text.x=element_text(size=12, colour= "black")) +
+  theme(axis.title.x=element_text(size=12, colour = "black")) +
+  theme(axis.title.y=element_text(size=12, colour = "black")) +
+  theme(legend.position = "none")
+
+plot.jiggle.hatch.v2
+```
+```{r}
+#Combine summary data into one dataframe with all three age groups. 
+latency_all_ages_by_clutch<-rbind(Latency_younger_low_by_clutch, Latency_younger_high_by_clutch, Latency_middle_by_clutch, Latency_older_by_clutch)
+kable(latency_all_ages_by_clutch,digits=4)
+str(latency_all_ages_by_clutch)
+
+latency_NT.jig<-subset(latency_all_ages_by_clutch, latency_all_ages_by_clutch$Treatment == "NT")
+latency_GT.jig<-subset(latency_all_ages_by_clutch, latency_all_ages_by_clutch$Treatment == "G")
+
+str(latency_NT.jig)
+
+plot.jiggle.latency.v2 <- latency_all_ages_by_clutch %>%
+  ggplot(aes(x=as.factor(AgeD), y=ltoh, color=Treatment))+ 
+    geom_boxplot(position="dodge", 
+             width=0.4, outlier.shape = NA)+ 
+    geom_jitter(data=latency_NT.jig, aes(x=as.factor(AgeD), y=ltoh), colour="black", pch=16, size=2, position=position_jitter(width=0.1)) +
+  geom_jitter(data=latency_GT.jig, aes(x=as.factor(AgeD), y=ltoh), colour="red", pch=16, size=2,  position=position_jitter(width=0.1)) +
+  #facet_wrap(facets=.~AgeD)+ 
+  #scale_x_continuous(limits=c(4.1,5.5),
+  #                   breaks=c(4.2, 4.7, 5.4),
+  #                   labels=c("4.2", "4.7", "5.4"))+
+  scale_y_continuous(limits = c(0, 4.5), 
+                     breaks=c(0, 1.5, 3, 4.5),
+                     labels=c("0", "1.5", "3", "4.5"))+
+  #scale_x_discrete(labels=c("G", "C")) +
+  labs(x = "Embryo age group (d)", 
+       y = "Latency to hatch (min)") +
+  scale_color_manual(name=NULL,
+                     values=c(treatmentcolors[1], treatmentcolors[2]),
+                     labels=c("Treated", "Control")) +
+  theme_cowplot(font_size = 12, line_size = 1, font_family="Helvetica") +
+  theme(strip.text.x = element_text(size = 12, color = "black", face = "bold"),
+        strip.text.y = element_text(size = 12, color = "black", face = "bold")) + 
+  theme(axis.text.y=element_text(size=12, colour= "black")) +
+  theme(axis.text.x=element_text(size=12, colour= "black")) +
+  theme(axis.title.x=element_text(size=12, colour = "black")) +
+  theme(axis.title.y=element_text(size=12, colour = "black")) +
+  theme(legend.position = "none")
+
+plot.jiggle.latency.v2
+
+figure.jiggle.latency <- ggplot(latency_all_ages, aes(x=AgeGroup, y=mean_ltoh, color=Treatment)) +
+  geom_point(size=2) +
+  geom_line(aes(color=Treatment), size=1)+
+  geom_errorbar(data=latency_all_ages, aes(ymin=mean_ltoh-SE, ymax=mean_ltoh+SE), width=0.05, size=1) +
+  scale_x_continuous(limits=c(4.1,5.5),
+                     breaks=c(4.2, 4.7, 5.4),
+                     labels=c("4.2", "4.7", "5.4"))+
+  scale_y_continuous(limits = c(0, 4.5), 
+                     breaks=c(0, 1.5, 3, 4.5),
+                     labels=c("0", "1.5", "3", "4.5"))+
+  labs(x = "\n Embryo age group (d)", 
+       y = "Latency to hatch (min)\n") +
+  scale_color_manual(name=NULL, 
+                     values=c(treatmentcolors[1], treatmentcolors[2]),
+                     labels=c("Gentamicin", "Control")) +
+  theme_cowplot(font_size = 12, line_size = 1, font_family="Helvetica") +
+  theme(axis.text.y=element_text(size=12, colour= "black")) +
+  theme(axis.text.x=element_text(size=12, colour= "black")) +
+  theme(axis.title.x=element_text(size=12, colour = "black")) +
+  theme(axis.title.y=element_text(size=12, colour = "black")) +
+  theme(legend.position = "none") 
+
+figure.jiggle.latency
+```
+combine plots 
+```{r}
+ggsave("~/Desktop/ForKaren.pdf", 
+ plot = plot.jiggle.hatch.v2, # or give ggplot object name as in myPlot,
+ width = 10, height = 10, 
+ units = "cm", # other options c("in", "cm", "mm"), 
+ dpi = 300, 
+ useDingbats=FALSE)
+```
 
 Combine summary data into one dataframe with all three age groups. 
 ```{r}
@@ -1345,27 +1853,27 @@ kable(all_ages,digits=4)
 Figure with bigger style for poster and talks. 
 
 ```{r}
-# plot.jiggle.hatch <- ggplot(all_ages, aes(x=AgeGroup, y=mean_propH, color=Treatment)) +
-#   geom_point(size=3) +
-#   geom_line(aes(color=Treatment), size=1.5)+
-#   geom_errorbar(data=all_ages, aes(ymin=mean_propH-SE, ymax=mean_propH+SE), width=0.05, size=1.5) +
-#   scale_x_continuous(limits=c(4.1,5.5),
-#                      breaks=c(4.2, 4.7, 5.4),
-#                      labels=c("4.2", "4.7", "5.4"))+
-#   scale_y_continuous(limits = c(0, 1)) +
-#   labs(x = NULL, 
-#        y = "Hatching Response\n") +
-#   scale_color_manual(name=NULL, 
-#                      values=c(treatmentcolors[1], treatmentcolors[2]),
-#                      labels=c("Treated", "Control")) +
-#   theme_cowplot(font_size = 18, line_size = 1) +
-#   theme(axis.text.y=element_text(size=18, colour= "black")) +
-#   theme(axis.text.x=element_text(size=18, colour= "black")) +
-#   theme(axis.title.x=element_text(size=18, colour = "black")) +
-#   theme(axis.title.y=element_text(size=18, colour = "black")) +
-#   theme(legend.justification = c(0,1), legend.position = c(0.05,1)) 
-# 
-# plot.jiggle.hatch
+plot.jiggle.hatch <- ggplot(all_ages, aes(x=AgeGroup, y=mean_propH, color=Treatment)) +
+  geom_point(size=3) +
+  geom_line(aes(color=Treatment), size=1.5)+
+  geom_errorbar(data=all_ages, aes(ymin=mean_propH-SE, ymax=mean_propH+SE), width=0.05, size=1.5) +
+  scale_x_continuous(limits=c(4.1,5.5),
+                     breaks=c(4.2, 4.7, 5.4),
+                     labels=c("4.2", "4.7", "5.4"))+
+  scale_y_continuous(limits = c(0, 1)) +
+  labs(x = NULL,
+       y = "Hatching Response\n") +
+  scale_color_manual(name=NULL,
+                     values=c(treatmentcolors[1], treatmentcolors[2]),
+                     labels=c("Treated", "Control")) +
+  theme_cowplot(font_size = 18, line_size = 1) +
+  theme(axis.text.y=element_text(size=18, colour= "black")) +
+  theme(axis.text.x=element_text(size=18, colour= "black")) +
+  theme(axis.title.x=element_text(size=18, colour = "black")) +
+  theme(axis.title.y=element_text(size=18, colour = "black")) +
+  theme(legend.justification = c(0,1), legend.position = c(0.05,1))
+
+plot.jiggle.hatch
 ```
 
 ```{r}
@@ -1606,6 +2114,85 @@ Fig5_inset_boxplot
 #  useDingbats=FALSE)
 ```
 
+#BOOKMARK
+
+```{r}
+NT_jiggling<-subset(all_ages_by_clutch, Treatment=="NT")
+GT_jiggling<-subset(all_ages_by_clutch, Treatment=="G")
+
+VOR_names <- c('4.17' = "4.17 d (No VOR)",
+               '4.2' = "4.2 d (With VOR)", 
+               '4.7' = "4.7 d", 
+               '5.4' = "5.4 d")
+
+boxplots <- all_ages_by_clutch %>%
+  ggplot(aes(x=Treatment, y=propH, color=Treatment))+ 
+  geom_boxplot(position="dodge", alpha = 1, size = 1,
+               width=0.15, outlier.shape = NA)+ 
+  geom_jitter(data=NT_jiggling, aes(x=Treatment, y=propH), colour="black", pch=16, size=2, position=position_jitter(width=0.05)) +
+  geom_jitter(data=GT_jiggling, aes(x=Treatment, y=propH), colour="red", pch=16, size=2,  position=position_jitter(width=0.05)) +
+  facet_wrap(facets=.~AgeD, labeller = as_labeller(VOR_names), nrow=1)+ 
+  scale_y_continuous(limits=c(0, 1.05),
+                     breaks=c(0, 0.5, 1),
+                     labels=c("0","0.5","1.0"))+
+  scale_x_discrete(labels=c("G", "C")) +
+  labs(x = NULL, 
+       y = "Proportion hatched") +
+  scale_color_manual(name=NULL, 
+                     values=c(treatmentcolors[1], treatmentcolors[2]),
+                     labels=c("Gentamicin", "Control")) +
+  theme_cowplot(font_size = 12, line_size = 1, font_family="Helvetica") +
+  theme(strip.text.x = element_text(size = 12, color = "black", face = "bold"),
+        strip.text.y = element_text(size = 12, color = "black", face = "bold")) + #bold.italics
+  theme(axis.text.y=element_text(size=12, colour= "black")) +
+  theme(axis.text.x=element_text(size=12, colour= "black")) +
+  theme(axis.title.x=element_text(size=12, colour = "black")) +
+  theme(axis.title.y=element_text(size=12, colour = "black")) +
+  theme(legend.position = "none")
+
+boxplots
+```
+
+```{r}
+str(latency_all_ages_by_clutch)
+latency_boxplots <- latency_all_ages_by_clutch %>%
+  ggplot(aes(x=Treatment, y=ltoh, color=Treatment))+ 
+  geom_boxplot(position="dodge", alpha = 1, size = 1,
+               width=0.15, outlier.shape = NA)+ 
+  geom_jitter(data=latency_NT.jig, aes(x=Treatment, y=ltoh), colour="black", pch=16, size=2, position=position_jitter(width=0.05)) +
+  geom_jitter(data=latency_GT.jig, aes(x=Treatment, y=ltoh), colour="red", pch=16, size=2,  position=position_jitter(width=0.05)) +
+  facet_wrap(facets=.~AgeD, labeller = as_labeller(VOR_names), nrow=1)+ 
+  scale_y_continuous(limits = c(0, 4.5), 
+                     breaks=c(0, 1.5, 3, 4.5),
+                     labels=c("0", "1.5", "3", "4.5"))+
+  scale_x_discrete(labels=c("G", "C")) +
+  labs(x = NULL, 
+       y = "Latency to hatch (min)") +
+  scale_color_manual(name=NULL, 
+                     values=c(treatmentcolors[1], treatmentcolors[2]),
+                     labels=c("Gentamicin", "Control")) +
+  theme_cowplot(font_size = 12, line_size = 1, font_family="Helvetica") +
+  theme(strip.text.x = element_text(size = 12, color = "black", face = "bold"),
+        strip.text.y = element_text(size = 12, color = "black", face = "bold")) + 
+  theme(axis.text.y=element_text(size=12, colour= "black")) +
+  theme(axis.text.x=element_text(size=12, colour= "black")) +
+  theme(axis.title.x=element_text(size=12, colour = "black")) +
+  theme(axis.title.y=element_text(size=12, colour = "black")) +
+  theme(legend.position = "none")
+
+latency_boxplots
+```
+combine plots 
+```{r}
+ComprehensiveFigure <- plot_grid(boxplots, latency_boxplots, figure.jiggle.hatch, figure.jiggle.latency, labels = "AUTO", ncol = 1, align = 'v', axis = "lrtb", rel_heights = c(1, 1, 1, 1))
+
+ggsave("~/Desktop/jiggling_results.pdf", 
+ plot = ComprehensiveFigure, # or give ggplot object name as in myPlot,
+ width = 20, height = 35, 
+ units = "cm", # other options c("in", "cm", "mm"), 
+ dpi = 300, 
+ useDingbats=FALSE)
+```
 
 ### 3 part figure 
 
@@ -1891,7 +2478,7 @@ anova(glmm1,glmm1.3)#Sig of interaction
 
 subset playback to tray data only
 ```{r}
-#playback.df <- subset(all_data, Experiment=="Tray")
+playback.df <- subset(all_data, Experiment=="Tray")
 ```
 
 ```{r} 
@@ -1957,15 +2544,23 @@ What is the age range and stage range of tested playback individuals?
 Playback_stAGE<-
   test %>%
   summarize(num_tested = n(),
+            min_age = min(Stimulus_start_age), 
+            max_age = max(Stimulus_start_age), 
             mean_stim_start_age = mean(Stimulus_start_age),
             SD_age = sd(Stimulus_start_age),
             SE_age = sd(Stimulus_start_age)/sqrt(n()), 
+            min_stage = min(Stage_average), 
+            max_stage = max(Stage_average), 
             mean_stim_start_stage = mean(Stage_average),
             SD_stage = sd(Stage_average),
             SE_stage = sd(Stage_average)/sqrt(n())
             )
 kable(Playback_stAGE,digits=4)
 
+#to find stage range across individuals, not tray means. 
+quantile(test$Stage1)
+quantile(test$Stage2)
+quantile(test$Stage3)
 ```
 
 Was there any hatching induced by the set up procedure? How many hatched post stimulus? How many eggs which remained unhatched were confirmed hatched competent?
@@ -2010,26 +2605,12 @@ LL_stats_playback <-
 kable(LL_stats_playback,digits=4)
 ```
 
-How many clutches are there where I have VOR measurements from pairs (NT and G)
-vs. how many clutches where addition data with no pairs. 
-
-```{r}
-Playback_by_clutch_treatment<-
-  test %>%
-  group_by(Clutch, Treatment) %>%
-  summarize(num_tested = n())%>%
-  mutate(count=n())
-kable(Playback_by_clutch_treatment,digits=4)
-
-single<-subset(Playback_by_clutch_treatment, Playback_by_clutch_treatment$count==1) #41 clutches
-double<-subset(Playback_by_clutch_treatment, Playback_by_clutch_treatment$count==2) #22 clutches
-```
-
-
 ##Proportion Hatched
 
 ```{r}
 quantile(test$PropH)
+quantile(test$PropH, probs=c(0.05, 0.25, 0.5, 0.75, 0.95))
+t.test(test$PropH)$"conf.int"
 ```
 
 ```{r}
@@ -2039,7 +2620,9 @@ playbacks_by_treatment<-
   summarize(count = n(),
             proph = mean(PropH, na.rm=T),
             SD = sd(PropH, na.rm=T), 
-            SE = sd(PropH, na.rm=T)/sqrt(n())
+            SE = sd(PropH, na.rm=T)/sqrt(n()), 
+            CI.lower = first(t.test(PropH)$"conf.int"), 
+            CI.higher = last(t.test(PropH)$"conf.int") 
             )
 kable(playbacks_by_treatment,digits=4)
 ```
@@ -2050,6 +2633,23 @@ NT <- subset(test, test$Treatment == "NT")
 GT <- subset(test, test$Treatment == "G")
 
 NT$PropH
+```
+
+How often did we have multiple trays from a clutch within a treatment?
+
+```{r}
+tray_table<-
+  test %>%
+  group_by(Clutch, Treatment) %>%
+  summarize(num_tested = n()
+            )
+kable(tray_table,digits=4)
+
+tab_df(tray_table,
+       title = "Tray Table",
+       file="Desktop\tray_table.doc"
+       )
+
 ```
 
 By 5 days of age, there is no significant difference in proportion of tray hatched (GLMM, χ2=1.8081, df=1, P=0.1787, Fig. 6a) between gentamicin treated and untreated control individuals.
@@ -2372,33 +2972,33 @@ kable(NT_by_tray,digits=4)
 
 
 ```{r}
-# hatching_plot <- ggplot(playback3, aes(x = latencies_sec, y = PropH, group=interaction(Treatment, TrayID), color=Treatment)) +
-#   geom_line(data=G_treated, color="red") +
-#   geom_line(data=NT_untreated, color="black") +
-#   ##geom_point(data=G_treated, color="black", size=1) +
-#   ##geom_smooth(data=G_treated, method = "lm", formula = y ~ poly(x, 2),  se=FALSE) +
-#               #aes(color=RdGy_pal[1:62])) +
-#   ##stat_smooth(aes(color=Treatment, group=TrayID), size=1, method="loess") +
-#   ##stat_smooth(aes(group=TrayID), method = 'lm', formula = y ~ poly(x,2), se= FALSE) + #polynomial
-#   #stat_smooth(method = 'nls', formula = y ~ a * log(x) +b, aes(colour = 'logarithmic'), se = FALSE, start = list(a=1,b=1)) +
-#   ##stat_smooth(method = 'nls', formula = y ~ a*exp(b *x), aes(colour = 'Exponential'), se = FALSE, start = list(a=1,b=1))
-#   scale_x_continuous(limits=c(0,350),
-#                      breaks=c(0, 50, 100, 150, 200, 250, 300, 350),
-#                      labels=c("0", "50", "100", "150","200", "250", "300", "350"))+
-#   scale_y_continuous(limits = c(0, 1)) +
-#   scale_color_manual(name=NULL,
-#                     values=c(treatmentcolors[1], treatmentcolors[2]),
-#                     labels=c("Treated", "Control")) +
-#   labs(x = "Latency to hatch (sec)",
-#        y = "Proportion of test eggs hatched\n") +
-#   theme_cowplot(font_size = 12, line_size = 1) +
-#   theme(axis.text.y=element_text(size=12, colour= "black")) +
-#   theme(axis.text.x=element_text(size=12, colour= "black")) +
-#   theme(axis.title.x=element_text(size=12, colour = "black")) +
-#   theme(axis.title.y=element_text(size=12, colour = "black")) +
-#   theme(legend.justification = c(1,0), legend.position = c(0.95,0.05)) 
-# 
-# hatching_plot
+hatching_plot <- ggplot(playback3, aes(x = latencies_sec, y = PropH, group=interaction(Treatment, TrayID), color=Treatment)) +
+  geom_line(data=G_treated, color="red") +
+  geom_line(data=NT_untreated, color="black") +
+  ##geom_point(data=G_treated, color="black", size=1) +
+  ##geom_smooth(data=G_treated, method = "lm", formula = y ~ poly(x, 2),  se=FALSE) +
+              #aes(color=RdGy_pal[1:62])) +
+  ##stat_smooth(aes(color=Treatment, group=TrayID), size=1, method="loess") +
+  ##stat_smooth(aes(group=TrayID), method = 'lm', formula = y ~ poly(x,2), se= FALSE) + #polynomial
+  #stat_smooth(method = 'nls', formula = y ~ a * log(x) +b, aes(colour = 'logarithmic'), se = FALSE, start = list(a=1,b=1)) +
+  ##stat_smooth(method = 'nls', formula = y ~ a*exp(b *x), aes(colour = 'Exponential'), se = FALSE, start = list(a=1,b=1))
+  scale_x_continuous(limits=c(0,350),
+                     breaks=c(0, 50, 100, 150, 200, 250, 300, 350),
+                     labels=c("0", "50", "100", "150","200", "250", "300", "350"))+
+  scale_y_continuous(limits = c(0, 1)) +
+  scale_color_manual(name=NULL,
+                    values=c(treatmentcolors[1], treatmentcolors[2]),
+                    labels=c("Treated", "Control")) +
+  labs(x = "Latency to hatch (sec)",
+       y = "Proportion of test eggs hatched\n") +
+  theme_cowplot(font_size = 12, line_size = 1) +
+  theme(axis.text.y=element_text(size=12, colour= "black")) +
+  theme(axis.text.x=element_text(size=12, colour= "black")) +
+  theme(axis.title.x=element_text(size=12, colour = "black")) +
+  theme(axis.title.y=element_text(size=12, colour = "black")) +
+  theme(legend.justification = c(1,0), legend.position = c(0.95,0.05))
+
+hatching_plot
 ```
 
 
@@ -2490,6 +3090,59 @@ ggsave("~/Desktop/Figure7v1.pdf",
 
 ```
 
+### searching for a better fit. 
+
+```{r}
+library(fitplc)
+
+#fit_sigmoidal <- fitconds(playback3, group="Treatment", varnames=c(K = "PropH", WP = "latencies_sec"), model="sigmoidal", Kmax=1, nboot=1000)
+#plot(fit_sigmoidal, onepanel=TRUE)
+
+fit_weibull <- fitconds(playback3, group="Treatment", varnames=c(K = "PropH", WP = "latencies_sec"), model="Weibull", Kmax=1, nboot=1000)
+
+plot(fit_weibull, 
+     onepanel=TRUE, 
+     pointcol=treatmentcolors, 
+     linecol=treatmentcolors,
+     xlab="Latency to hatch (sec)",
+     ylab= "Proportion of test eggs hatched", 
+     #px_ci = "parametric", 
+     px_ci_label = FALSE, 
+     linelwd = 3, 
+     pxlinecol = treatmentcolors, 
+     pxcex=0.7, 
+     legend=FALSE
+     )
+
+#CIs are estimated with the bootstrap method. 
+#P50 = the latency at which 50% of the tray has hatched. 
+#vertical dashed lines indicate the 95% confidence interval for P50 (estimated from the bootstrap)
+#gray shaded area is the 95% bootstrapped confidence interval for the fitted curve. 
+```
+
+Save figure
+```{r}
+ggsave("~/Desktop/Figure7v2.pdf",
+       plot = plot(fit_weibull, 
+     onepanel=TRUE, 
+     pointcol=treatmentcolors, 
+     linecol=treatmentcolors,
+     xlab="Latency to hatch (sec)",
+     ylab= "Proportion of test eggs hatched", 
+     #px_ci = "parametric", 
+     px_ci_label = FALSE, 
+     linelwd = 3, 
+     pxlinecol = treatmentcolors, 
+     pxcex=0.7, 
+     legend=FALSE
+     ), 
+       width = 15.25, height = 13,
+       units = "cm", 
+       dpi = 300, 
+       useDingbats=FALSE)
+
+```
+
 Now we want to look at latency to hatch of all tested embryos that hatched: 
 
 By 5 days of age, there is no significant difference in the latency to hatch of all tested embryos that hatched (GLMM, χ2=1.0805, df=1, P=0.2986, Fig. 7) between gentamicin treated and untreated control individuals.
@@ -2522,20 +3175,136 @@ Paired_data_similar_stages <-
   all_data %>%
   filter(!is.na(Sample_name)) %>%
   group_by(Clutch, Treatment) %>%
-  summarize(num_tested = n(), 
+  summarize(num_tested = n(),
             mean_amp = mean(Mean_VOR, na.rm=T),
             mean_stage = mean(Combined_stage, na.rm=T)
             )%>%
   mutate(count=n()) %>%
   filter(count==2) %>%
   mutate(Difference = mean_stage - lag(mean_stage)) %>%
-  #also filter out the pairs where the mean stage between treatments is really different (>1) 
-  mutate(Difference_new = ave(Difference, Clutch, FUN=function(x)unique(x[!is.na(x)]))) %>%#fill in lag so that both indivs have difference value. 
+  #also filter out the pairs where the mean stage between treatments is really different (>1)
+  mutate(Difference_new = ave(Difference, Clutch, FUN=function(x)unique(x[!is.na(x)]))) %>%#fill in lag so that both indivs have difference value.
   filter(Difference_new > -1 && Difference_new < 1)
 
 kable(Paired_data_similar_stages,digits=4)
 
-nrow(Paired_data_similar_stages)/2
+sum(Paired_data_similar_stages$num_tested)
+nrow(Paired_data_similar_stages)/2 #47 clutches
+```
+For Fig 1 - 
+```{r}
+# str(all_data)
+# #find one pair of sibs - one T and one NT, same stage and age. 
+# ForFig1 <-
+#   all_data %>%
+#   filter(!is.na(Sample_name), !is.na(Stimulus_start_age), !is.na(LL1start)) %>%
+#   group_by(Clutch, Treatment) %>%
+#   summarize(num_tested = n(),
+#             mean_amp = mean(Mean_VOR, na.rm=T),
+#             mean_stage = mean(Combined_stage, na.rm=T),
+#             mean_age = mean(Stimulus_start_age, na.rm=T)
+#             )%>%
+#   mutate(count=n()) %>%
+#   filter(count==2) %>%
+#   mutate(Difference_stage = mean_stage - lag(mean_stage)) %>% 
+#   mutate(Difference_age = mean_age - lag(mean_age)) %>% 
+#   #also filter out the pairs where the mean stage between treatments is really different (>1)
+#   mutate(Difference_new_stage = ave(Difference_stage, Clutch, FUN=function(x)unique(x[!is.na(x)]))) %>%
+#  mutate(Difference_new_age = ave(Difference_age, Clutch, FUN=function(x)unique(x[!is.na(x)]))) %>%
+#   #fill in lag so that both indivs have difference value.
+#   filter(Difference_new_stage == 0, Difference_new_age < 0.05) 
+# kable(ForFig1,digits=4)
+# 
+# chooseme<- all_data%>%
+#   subset(Clutch==133) %>%
+#   filter(!is.na(LL1start))
+# 
+# chooseme
+```
+
+How many clutches are there where I have VOR measurements from pairs (NT and G) near the same stage
+vs. how many clutches where addition data with no pairs (near the same stage). 
+
+```{r}
+Paired_data_similar_stages_experiment <-
+  all_data %>%
+  filter(!is.na(Sample_name)) %>%
+  group_by(Experiment, Clutch, Treatment) %>%
+  summarize(num_tested = n(),
+            mean_amp = mean(Mean_VOR, na.rm=T),
+            mean_stage = mean(Combined_stage, na.rm=T)
+            )%>%
+  mutate(count=n()) %>%
+  filter(count==2) %>%
+  mutate(Difference = mean_stage - lag(mean_stage)) %>%
+  #also filter out the pairs where the mean stage between treatments is really different (>1)
+  mutate(Difference_new = ave(Difference, Clutch, FUN=function(x)unique(x[!is.na(x)]))) %>%#fill in lag so that both indivs have difference value.
+  filter(Difference_new > -1 && Difference_new < 1)
+
+kable(Paired_data_similar_stages_experiment,digits=4)
+
+nrow(Paired_data_similar_stages_experiment)/2 #56 clutches total
+nrow(subset(Paired_data_similar_stages_experiment,Paired_data_similar_stages_experiment$Experiment =="Individual"))/2 #24 clutches for jiggling
+nrow(subset(Paired_data_similar_stages_experiment,Paired_data_similar_stages_experiment$Experiment =="Tray"))/2 #32 clutches for playback
+
+
+#how many clutches in 2 older 
+```
+
+how many are unpaired?
+```{r}
+Single_data_similar_stages_experiment <-
+  all_data %>%
+  filter(!is.na(Sample_name)) %>%
+  group_by(Experiment, Clutch, Treatment) %>%
+  summarize(num_tested = n(),
+            mean_amp = mean(Mean_VOR, na.rm=T),
+            mean_stage = mean(Combined_stage, na.rm=T)
+            )%>%
+  mutate(count=n()) %>%
+  filter(count==1) 
+
+kable(Single_data_similar_stages_experiment,digits=4)
+
+nrow(Single_data_similar_stages_experiment) #43 single clutches total
+nrow(subset(Single_data_similar_stages_experiment,Single_data_similar_stages_experiment$Experiment =="Individual")) #29 clutches for jiggling
+nrow(subset(Single_data_similar_stages_experiment,Single_data_similar_stages_experiment$Experiment =="Tray")) #14 clutches for playback
+```
+
+```{r}
+# NT_paired_exp<-subset(Paired_data_similar_stages_experiment, Paired_data_similar_stages_experiment$Treatment=="NT")
+# GT_paired_exp<-subset(Paired_data_similar_stages_experiment, Paired_data_similar_stages_experiment$Treatment=="G")
+# 
+# Figure_VOR<-ggpaired(data=Paired_data_similar_stages_experiment, x="Treatment", y="mean_amp", color="Treatment", line.color = "gray", line.size = 0.4, palette = "npg") + 
+#   scale_y_continuous(limits=c(0, 60),
+#                      breaks=c(0, 20, 40, 60),
+#                      labels=c("0", "20", "40", "60"))+
+#   scale_x_discrete(labels=c("Gentamicin", "Control")) + 
+#   labs(x = NULL,
+#        y = "VOR (degrees) \n") +
+#   scale_color_manual(name=NULL, 
+#                      values=c(treatmentcolors[1], treatmentcolors[2]),
+#                      labels=c("Gentamicin", "Control")) +
+#   theme_cowplot(font_size = 12, line_size = 1, font_family="Helvetica") +
+#   theme(axis.text.y=element_text(size=12, colour= "black")) +
+#   theme(axis.text.x=element_text(size=12, colour= "black")) +
+#   theme(axis.title.x=element_text(size=12, colour = "black")) +
+#   theme(axis.title.y=element_text(size=12, colour = "black")) +
+#   theme(legend.position = "none")
+# 
+# Figure_VOR
+```
+
+```{r}
+Playback_by_clutch_treatment<-
+  test %>%
+  group_by(Clutch, Treatment) %>%
+  summarize(num_tested = n())%>%
+  mutate(count=n())
+kable(Playback_by_clutch_treatment,digits=4)
+
+single<-subset(Paired_data_similar_stages_experiment, Paired_data_similar_stages_experiment$count==1) #41 clutches
+double<-subset(Paired_data_similar_stages_experiment, Paired_data_similar_stages_experiment$count==2) #22 clutches
 ```
 
 Across these paired data, is there a treatment effect on VOR? 
@@ -2621,4 +3390,186 @@ ggsave("~/Desktop/VOR_fig_v1.pdf",
        units = "cm", # other options c("in", "cm", "mm"),
        dpi = 300, 
        useDingbats=FALSE)
+```
+
+
+```{r}
+library(ggpubr)
+
+Figure_VOR<-ggpaired(data=Paired_data_similar_stages, x="Treatment", y="mean_amp", color="Treatment", line.color = "gray", line.size = 0.4, palette = "npg") + 
+  scale_y_continuous(limits=c(0, 60),
+                     breaks=c(0, 20, 40, 60),
+                     labels=c("0", "20", "40", "60"))+
+  scale_x_discrete(labels=c("Gentamicin", "Control")) + 
+  labs(x = NULL,
+       y = "VOR (degrees) \n") +
+  scale_color_manual(name=NULL, 
+                     values=c(treatmentcolors[1], treatmentcolors[2]),
+                     labels=c("Gentamicin", "Control")) +
+  theme_cowplot(font_size = 12, line_size = 1, font_family="Helvetica") +
+  theme(axis.text.y=element_text(size=12, colour= "black")) +
+  theme(axis.text.x=element_text(size=12, colour= "black")) +
+  theme(axis.title.x=element_text(size=12, colour = "black")) +
+  theme(axis.title.y=element_text(size=12, colour = "black")) +
+  theme(legend.position = "none")
+
+Figure_VOR
+```
+
+```{r}
+ggsave("~/Desktop/FigS2_v5.pdf",
+       plot = Figure_VOR, # or give ggplot object name as in myPlot,
+       width = 10, height = 15,
+       units = "cm", # other options c("in", "cm", "mm"),
+       dpi = 300, 
+       useDingbats=FALSE)
+```
+
+
+## Read in VOR data
+```{r} 
+tactile<-read.csv("Jiggling_VOR.csv", header=TRUE, stringsAsFactors = FALSE)
+```
+
+We found that MCH in response to jiggling cues occurs before vestibular function at a rate of ~11% in non-treated individuals 
+
+seven individuals (11%) had no detectable VOR; they hatched X–X h before their siblings showed VOR. 
+
+First, subset just the 7 individuals that hatched with no VOR. 
+
+```{r}
+seven <- subset(tactile, VOR.amplitude..mean.sine.fit..excluding.non.VOR.eye.movements. == 0 & Hatching.response..0...no.hatch..1...hatched. == 1) #7 hatched with NO VOR
+
+others <- subset(tactile, VOR.amplitude..mean.sine.fit..excluding.non.VOR.eye.movements. > 0 & Hatching.response..0...no.hatch..1...hatched. ==1) #54 hatched with VOR
+
+hatched <- subset(tactile, Hatching.response..0...no.hatch..1...hatched. ==1) #61 hatched total
+
+7/(7+54) #11% of those hatched had VOR. 
+```
+
+In prior work with manual egg-jiggling at stages 26–29, measuring VOR on every individual, the hatching response of individuals “without vestibular function” was similarly low (23%) using criteria of  <1° or <10°, and it increased substantially as VOR increased to ca. 30–40° 
+
+```{r}
+LT10 <- subset(tactile, VOR.amplitude..mean.sine.fit..excluding.non.VOR.eye.movements. < 10) #51 low VOR
+LT10_hat <- subset(LT10, Hatching.response..0...no.hatch..1...hatched.   == "1") #12 hatch with low VOR
+LT10_nohat <- subset(LT10, Hatching.response..0...no.hatch..1...hatched.   == "0") #39 NH with low VOR
+#propH = 12/51 = 0.2353
+12/()
+
+LT1 <- subset(tactile, VOR.amplitude..mean.sine.fit..excluding.non.VOR.eye.movements. < 1) #31 really low VOR
+LT1_hat <- subset(LT1, Hatching.response..0...no.hatch..1...hatched.   == "1") #7 hatched with really low VOR
+LT1_nohat <- subset(LT1, Hatching.response..0...no.hatch..1...hatched.   == "0") #24 NH with really low VOR
+#propH = 7/31 = 0.2258
+```
+
+```{r}
+seven <- subset(tactile, VOR.amplitude..mean.sine.fit..excluding.non.VOR.eye.movements. == 0 & Hatching.response..0...no.hatch..1...hatched. == 1) #7 hatched with NO VOR
+
+others <- subset(tactile, VOR.amplitude..mean.sine.fit..excluding.non.VOR.eye.movements. > 0 & Hatching.response..0...no.hatch..1...hatched. ==1) #54 hatched with VOR
+
+hatched <- subset(tactile, Hatching.response..0...no.hatch..1...hatched. ==1) #61 hatched total
+
+7/(7+54) #11% of those hatched had VOR. 
+```
+
+
+
+# 6 part fig
+```{r}
+FigureResults <- plot_grid(Fig5_inset_boxplot, figure.jiggle.hatch, figure.jiggle.latency, labels = "AUTO", ncol = 3, align = 'v', axis = "lrtb", rel_heights = c(1.1, 1.05, 1.2))
+
+
+
+ggsave("~/Desktop/FigureResults_v1.pdf", 
+ plot = FigureResults, # or give ggplot object name as in myPlot,
+ width = 10, height = 20, 
+ units = "cm", # other options c("in", "cm", "mm"), 
+ dpi = 300, 
+ useDingbats=FALSE)
+```
+
+# FIVE DAY
+
+If i restricted age from 5.3997 d to 5.5569 d  ~ or ~ if we restrict stage from 30 to 32 we would get some overlap. 
+would there be enough sample size to conduct an analysis on latency? 
+would the latency analysis change? 
+
+Make a new dataframe "fived" including oldest jiggling age and all playbacks:
+```{r}
+fived <- subset(all_data, all_data$Experiment=="Tray" | all_data$Age_groups_three=="old")
+```
+
+```{r}
+#let's take all older jiggled individuals that hatched and where we know their latencies to hatch
+
+fived_latencies <- rbind(older_jiggling)
+  
+Latency_older_by_clutch #latencies by clutch
+
+
+test$
+
+  
+glmm4 <- glmer(First_latency_min ~ Treatment * Stage_average + (1|Clutch), family=Gamma(inverse), data=test, glmerControl(optimizer="bobyqa", optCtrl = list(maxfun = 100000)))
+```
+
+
+```{r}
+str(test)
+#want latencies by clutch of playbacks too 
+
+Playback_by_clutch<-
+  test %>%
+  group_by(Clutch) %>%
+  summarize(num_tested = n())
+kable(Playback_by_clutch,digits=4) #63 clutches
+nrow(Playback_by_clutch)
+
+Latency_playback_by_clutch<-
+  test %>%
+  group_by(Clutch, Treatment) %>%
+  summarize(count = n(),
+            ltoh = mean(First_latency_min, na.rm=T),
+            SD = sd(First_latency_min, na.rm=T), 
+            SE = sd(First_latency_min, na.rm=T)/sqrt(n())
+            )
+#Latency_playback_by_clutch$AgeD <- 5.--
+kable(Latency_playback_by_clutch,digits=4)
+```
+
+What's the range of overlap in age?
+```{r}
+
+
+
+```
+
+What's the range of overlap in stage?
+```{r}
+
+
+```
+
+Restrict age between 5.3997 and 5.5569 d (inclusive)
+```{r}
+fived_restAGE <- subset(fived, fived$Stimulus_start_age>=5.3997 & fived$Stimulus_start_age<=5.5569)
+fived_restAGE_jigg <- subset(fived_restAGE, fived_restAGE$Experiment=="Individual")
+fived_restAGE_play <- subset(fived_restAGE, fived_restAGE$Experiment=="Tray")
+```
+
+Restrict stage between 30 and 32 (inclusive)
+```{r}
+fived_restSTAGE <- subset(fived, fived$Combined_stage>=30 & fived$Combined_stage<=32)
+fived_restSTAGE_jigg <- subset(fived_restSTAGE, fived_restSTAGE$Experiment=="Individual")
+fived_restSTAGE_play <- subset(fived_restSTAGE, fived_restSTAGE$Experiment=="Tray")
+```
+
+Of the restricted stages, do we have enough latency data?
+```{r}
+fived_restSTAGE_jigg_ltoh <- subset(fived_restSTAGE_jigg, fived_restSTAGE_jigg$Latency_min>0)
+nrow(fived_restSTAGE_jigg_ltoh) #31 individuals
+
+str(fived_restSTAGE_play)
+fived_restSTAGE_play_ltoh <- subset(fived_restSTAGE_play, fived_restSTAGE_play$Latency_min>0)
+nrow(fived_restSTAGE_play_ltoh)
 ```
